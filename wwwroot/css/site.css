@@ -22,6 +22,7 @@ body {
     padding: 0;
     overflow: hidden;
     height: 100vh;
+    min-height: 100%;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
