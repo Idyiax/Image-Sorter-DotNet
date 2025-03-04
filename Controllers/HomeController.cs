@@ -13,7 +13,12 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+    public IActionResult LibraryView()
+    {
+        return View();
+    }
+
+    public IActionResult SplitView()
     {
         return View();
     }

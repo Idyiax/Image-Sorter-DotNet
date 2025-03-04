@@ -1,0 +1,224 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    :root {
+        --columns: 5;
+        --entry-width: 184px;
+        --entry-margin: 16px;
+    }
+
+    .library-container {
+        display: flex;
+        padding: 0px;
+        flex-wrap: wrap;
+        list-style: none;
+        width: calc((var(--columns) * var(--entry-width)) + (var(--columns) * var(--entry-margin) * 2) + 12px);
+        overflow: auto;
+        scrollbar-gutter: stable;
+        scrollbar-width: thin;
+        margin: 0 80px 0 80px;
+        max-height: calc(100vh - 57px);
+    }
+
+    .entry-container {
+        width: var(--entry-width);
+        margin: var(--entry-margin);
+    }
+
+    .thumbnail-container {
+        display: inline-flex;
+        width: var(--entry-width);
+        height: var(--entry-width);
+        cursor: pointer;
+    }
+
+    .thumbnail {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background-color: var(--bg-colour-dark);
+        overflow: hidden;
+        object-fit: cover;
+        object-position: center center;
+        border-style: none;
+        transition: opacity 0.2s;
+    }
+
+    .label-container{
+        padding-left: 4px;
+    }
+
+    .label-container a {
+        color: rgb(180, 180, 180) !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+
+<div class="containter h-100 d-flex justify-content-center align-items-start overflow-hidden" style="max-height: calc(100vh - 57px)">
+    <ul class="library-container">
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Loona selfie.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+					Loona
+				</a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Uzi.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Uzi
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Frieren.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Frieren
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Dino Komi.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Dino Komi
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Miku Yea.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Miku Yea!
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Pearl and Drone.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Pearl & Drone
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Millie Knife.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Millie With a Knife
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Tohru Gloved Up.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Tohru Gloved Up
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Michiru.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Michiru
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Tentacles.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Tentacles!
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Tohru's Tail.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Tohru's Tail
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Pearl Drone.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Pearl Drone
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Tohru and Kobayashi.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Tohru & Miss Kobayashi
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Deep Cut.jpg" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Deep Cut
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Off the Hook.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Off The Hook
+                </a>
+            </div>
+        </li>
+        <li class="entry-container">
+            <a class="thumbnail-container">
+                <img src="~/img/Tohru No!.png" class="thumbnail" />
+            </a>
+            <div class="label-container">
+                <a>
+                    Tohru No!
+                </a>
+            </div>
+        </li>
+    </ul>
+</div>
