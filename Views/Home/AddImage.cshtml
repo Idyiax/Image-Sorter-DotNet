@@ -1,0 +1,55 @@
+﻿<style>
+    .previewImageContainer {
+        height: calc(100% - 64px);
+        aspect-ratio: 0.7;
+        background-color: var(--bg-colour-dark);
+        border-radius: 32px;
+        margin: 20px;
+    }
+
+    .previewImage {
+        height: 100%;
+        width: 100%;
+        border-radius: 32px;
+        object-fit: contain;
+        object-position: center center;
+        border-style: none;
+    }
+
+    label {
+        color: whitesmoke;
+    }
+</style>
+
+<div class="container-fluid d-inline-flex align-items-center" style="height: calc(100vh - 57px)">
+    <div class="container-fluid h-100 p-0">
+        <form>
+            <label for="images">Select Image</label><br>
+            <input type="file" id="images" name="images" accept="image/*"><br>
+            <label for="iName">Image Name</label><br>
+            <input type="text" id="iName" name="iName"><br>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <div class="previewImageContainer">
+        <img class="previewImage" src="" />
+    </div>
+</div>
+
+<script>
+    document.getElementById('images').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+
+    const fileNameWithoutExtension = file.name.replace(/\.[^\.]*$/, '');
+    document.getElementById('iName').value = fileNameWithoutExtension;
+
+    if (file) {
+        document.querySelector('.previewImage').src = URL.createObjectURL(file);
+        // Clean up when done
+        document.querySelector('.previewImage').onload = function() {
+            URL.revokeObjectURL(this.src);
+            };
+        }
+    });
+</script>
