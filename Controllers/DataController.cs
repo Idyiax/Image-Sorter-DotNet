@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Image_Sorter_DotNet.Models;
 using Image_Sorter_DotNet.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Image_Sorter_DotNet.Controllers;
 
@@ -17,7 +18,7 @@ public class DataController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Images>> PostImage(IFormFile file, string name = "")
+    public async Task<ActionResult<Images>> PostImage([FromForm] IFormFile file, [FromForm] string? name)
     {
         // Create unique filename
         var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
@@ -41,7 +42,7 @@ public class DataController : ControllerBase
         // Create database entry
         var image = new Images
         {
-            FileName = name == "" ? uniqueFileName : name,
+            FileName = name == null ? uniqueFileName : name,
             FilePathName = $"/img/{uniqueFileName}",
             CreatedDate = DateTime.UtcNow
         };

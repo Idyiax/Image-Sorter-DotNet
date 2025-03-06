@@ -23,11 +23,11 @@
 
 <div class="container-fluid d-inline-flex align-items-center" style="height: calc(100vh - 57px)">
     <div class="container-fluid h-100 p-0">
-        <form>
-            <label for="images">Select Image</label><br>
-            <input type="file" id="images" name="images" accept="image/*"><br>
-            <label for="iName">Image Name</label><br>
-            <input type="text" id="iName" name="iName"><br>
+        <form id="uploadForm" enctype="multipart/form-data" asp-controller="Data" asp-action="PostImage">
+            <label for="file">Select Image</label><br>
+            <input type="file" id="file" name="file" accept="image/*"><br>
+            <label for="name">Image Name</label><br>
+            <input type="text" id="name" name="name"><br>
             <input type="submit" value="Submit">
         </form>
     </div>
@@ -38,17 +38,44 @@
 </div>
 
 <script>
-    document.getElementById('images').addEventListener('change', function(e) {
-    const file = e.target.files[0];
+    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
 
-    const fileNameWithoutExtension = file.name.replace(/\.[^\.]*$/, '');
-    document.getElementById('iName').value = fileNameWithoutExtension;
+        const formData = new FormData(this);
 
-    if (file) {
-        document.querySelector('.previewImage').src = URL.createObjectURL(file);
-        // Clean up when done
-        document.querySelector('.previewImage').onload = function() {
-            URL.revokeObjectURL(this.src);
+        try {
+            const response = await fetch('/api/data', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                this.reset();
+                document.querySelector('.previewImage').src = "";
+            } 
+            else {
+                alert('Upload failed. Please try again.');
+            }
+        } 
+        
+        catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while uploading. Please try again.');
+        }
+    });
+
+    document.getElementById('file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+
+        const fileNameWithoutExtension = file.name.replace(/\.[^\.]*$/, '');
+        document.getElementById('name').value = fileNameWithoutExtension;
+
+        if (file) {
+            document.querySelector('.previewImage').src = URL.createObjectURL(file);
+
+            // Clean up when done
+            document.querySelector('.previewImage').onload = function() {
+                URL.revokeObjectURL(this.src);
             };
         }
     });
