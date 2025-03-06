@@ -65,4 +65,11 @@ public class DataController : ControllerBase
         // Return the image URL
         return Ok(new { url = image.FilePathName });
     }
+
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Images>>> GetAllImages()
+    {
+        return await _context.Images.ToListAsync();
+    }
 }

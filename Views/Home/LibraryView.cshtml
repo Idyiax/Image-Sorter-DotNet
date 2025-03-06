@@ -60,165 +60,39 @@
 
 <div class="containter h-100 d-flex justify-content-center align-items-start overflow-hidden" style="max-height: calc(100vh - 57px)">
     <ul class="library-container">
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Loona selfie.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-					Loona
-				</a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Uzi.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Uzi
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Frieren.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Frieren
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Dino Komi.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Dino Komi
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Miku Yea.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Miku Yea!
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Pearl and Drone.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Pearl & Drone
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Millie Knife.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Millie With a Knife
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Tohru Gloved Up.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Tohru Gloved Up
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Michiru.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Michiru
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Tentacles.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Tentacles!
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Tohru's Tail.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Tohru's Tail
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Pearl Drone.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Pearl Drone
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Tohru and Kobayashi.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Tohru & Miss Kobayashi
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Deep Cut.jpg" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Deep Cut
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Off the Hook.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Off The Hook
-                </a>
-            </div>
-        </li>
-        <li class="entry-container">
-            <a class="thumbnail-container">
-                <img src="~/img/Tohru No!.png" class="thumbnail" />
-            </a>
-            <div class="label-container">
-                <a>
-                    Tohru No!
-                </a>
-            </div>
-        </li>
+        <!-- Images get inserted here on DOMContentLoaded -->
     </ul>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadImages);
+
+    async function loadImages() {
+        try {
+            const response = await fetch('/api/data');
+            const images = await response.json();
+            
+            const libraryContainer = document.querySelector('.library-container');
+
+            images.forEach(image => {
+                const entryContainer = document.createElement('li');
+                entryContainer.className = 'entry-container';
+
+                entryContainer.innerHTML = `
+                    <a class="thumbnail-container">
+                        <img src="${image.filePathName}" class="thumbnail" />
+                    </a>
+                    <div class="label-container">
+                        <a>${image.fileName}</a>
+                    </div>
+                `;
+
+                libraryContainer.appendChild(entryContainer);
+            });
+        } 
+        
+        catch (error) {
+            console.error('Error loading images:', error);
+        }
+    }  
+</script>
