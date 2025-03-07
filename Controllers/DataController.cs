@@ -57,13 +57,13 @@ public class DataController : ControllerBase
     public async Task<ActionResult<Images>> GetImage(int id)
     {
         var image = await _context.Images.FindAsync(id);
+
         if (image == null)
         {
             return NotFound();
         }
 
-        // Return the image URL
-        return Ok(new { url = image.FilePathName });
+        return Ok(image);
     }
 
 

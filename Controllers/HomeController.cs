@@ -28,6 +28,11 @@ public class HomeController : Controller
         return View();
     }
 
+    public IActionResult ImageViewer(int id)
+    {
+        return View(id);
+    }
+
     public IActionResult Privacy()
     {
         return View();

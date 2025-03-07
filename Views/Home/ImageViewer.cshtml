@@ -1,0 +1,34 @@
+﻿<style>
+
+</style>
+
+<div class="containter h-100 d-flex justify-content-center align-items-center" style="max-height: calc(100vh - 57px)">
+    <img id="main-image" class="object-fit-contain" src="" style="max-height: calc(100vh - 57px)" />
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Get the ID from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = parseInt(urlParams.get('id') || urlParams.get('id') || '0');
+        
+        try {
+            const response = await fetch(`/api/data/${id}`);
+            const image = await response.json();
+
+            console.log(image);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Update the page with the image data
+            const imageElement = document.getElementById('main-image');
+            imageElement.src = image.filePathName;
+            imageElement.alt = image.fileName;
+        } 
+        
+        catch (error) {
+            console.error('Error fetching image:', error);
+        }
+    });
+</script>

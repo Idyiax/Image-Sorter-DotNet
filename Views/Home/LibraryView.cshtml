@@ -30,7 +30,6 @@
         display: inline-flex;
         width: var(--entry-width);
         height: var(--entry-width);
-        cursor: pointer;
     }
 
     .thumbnail {
@@ -54,7 +53,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: bold;
-        cursor: pointer;
+        text-decoration: none;
     }
 </style>
 
@@ -79,11 +78,11 @@
                 entryContainer.className = 'entry-container';
 
                 entryContainer.innerHTML = `
-                    <a class="thumbnail-container">
+                    <a class="thumbnail-container" href="/Home/ImageViewer?id=${image.id}">
                         <img src="${image.filePathName}" class="thumbnail" />
                     </a>
                     <div class="label-container">
-                        <a>${image.fileName}</a>
+                        <a asp-area="" href="/Home/ImageViewer?id=${image.id}">${image.fileName}</a>
                     </div>
                 `;
 
