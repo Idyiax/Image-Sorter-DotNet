@@ -3,6 +3,7 @@
     --bg-colour-dark: rgb(38, 38, 38);
     --bg-colour-light: rgb(120, 120, 120);
     --border-colour: rgb(33, 33, 33);
+    --text-colour: rgb(180, 180, 180);
 }
 
 html {
@@ -57,4 +58,8 @@ body {
 
 .border-colour {
     border-color: var(--border-colour);
+}
+
+.text-colour {
+    color: var(--text-colour);
 }

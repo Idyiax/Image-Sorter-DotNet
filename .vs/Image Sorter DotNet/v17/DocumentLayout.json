@@ -15,10 +15,6 @@
       "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:controllers\\datacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|e:\\personal projects\\image-sorter-dotnet\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|e:\\personal projects\\image-sorter-dotnet\\views\\home\\addimage.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:views\\home\\addimage.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -27,12 +23,16 @@
       "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|e:\\personal projects\\image-sorter-dotnet\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|e:\\personal projects\\image-sorter-dotnet\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|e:\\personal projects\\image-sorter-dotnet\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|e:\\personal projects\\image-sorter-dotnet\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D18E517E-A419-4B44-9C25-F14EE2E95617}|Image Sorter DotNet.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,7 +46,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\Personal Projects\\Image-Sorter-DotNet\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -55,12 +55,11 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-28T10:06:26.619Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "HomeController.cs",
               "DocumentMoniker": "E:\\Personal Projects\\Image-Sorter-DotNet\\Controllers\\HomeController.cs",
               "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
@@ -79,14 +78,14 @@
               "RelativeDocumentMoniker": "Controllers\\DataController.cs",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\Controllers\\DataController.cs",
               "RelativeToolTip": "Controllers\\DataController.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAowEEAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAEAAAAAAAAAAAADwv2IAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-06T09:58:53.167Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 4,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "E:\\Personal Projects\\Image-Sorter-DotNet\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
@@ -99,7 +98,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "AddImage.cshtml",
               "DocumentMoniker": "E:\\Personal Projects\\Image-Sorter-DotNet\\Views\\Home\\AddImage.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\AddImage.cshtml",
@@ -118,7 +117,7 @@
               "RelativeDocumentMoniker": "Views\\Home\\LibraryView.cshtml",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\Views\\Home\\LibraryView.cshtml",
               "RelativeToolTip": "Views\\Home\\LibraryView.cshtml",
-              "ViewState": "AgIAADkAAAAAAAAAAAAAAE8AAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAADQAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-03-04T12:34:36.686Z",
               "EditorCaption": ""
@@ -131,22 +130,23 @@
               "RelativeDocumentMoniker": "Views\\Home\\ImageViewer.cshtml",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\Views\\Home\\ImageViewer.cshtml",
               "RelativeToolTip": "Views\\Home\\ImageViewer.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-03-07T11:06:39.336Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 5,
               "Title": "site.css",
               "DocumentMoniker": "E:\\Personal Projects\\Image-Sorter-DotNet\\wwwroot\\css\\site.css",
               "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\wwwroot\\css\\site.css",
               "RelativeToolTip": "wwwroot\\css\\site.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAAD8AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-02-28T10:46:53.219Z"
+              "WhenOpened": "2025-03-07T14:25:34.364Z",
+              "EditorCaption": ""
             }
           ]
         }
