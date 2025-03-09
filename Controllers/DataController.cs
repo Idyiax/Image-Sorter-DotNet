@@ -26,29 +26,48 @@ public class DataController : ControllerBase
         // Create full path
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", uniqueFileName);
 
-        // Create directory if it doesn't exist
-        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img");
-        if (!Directory.Exists(uploadPath))
+        try
         {
-            Directory.CreateDirectory(uploadPath);
+            // Create directory if it doesn't exist
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img");
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            // Save the file
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await file.CopyToAsync(stream);
+            }
         }
 
-        // Save the file
-        using (var stream = System.IO.File.Create(filePath))
+        catch
         {
-            await file.CopyToAsync(stream);
+            return BadRequest();
         }
 
         // Create database entry
         var image = new Images
         {
-            FileName = name == null ? uniqueFileName : name,
+            FileName = name == null ? "" : name,
             FilePathName = $"/img/{uniqueFileName}",
             CreatedDate = DateTime.UtcNow
         };
 
-        _context.Images.Add(image);
-        await _context.SaveChangesAsync();
+        try
+        {
+            // Add image entry to the database
+            _context.Images.Add(image);
+            await _context.SaveChangesAsync();
+        }
+
+        catch
+        {
+            // Delete the created image if adding the database entry fails
+            System.IO.File.Delete(filePath);
+            return BadRequest();
+        }
 
         return CreatedAtAction(nameof(GetImage), new { id = image.Id }, image);
     }
@@ -101,6 +120,7 @@ public class DataController : ControllerBase
         }
 
         var imagePath = image.FilePathName;
+
         _context.Images.Remove(image);
 
         await _context.SaveChangesAsync();
