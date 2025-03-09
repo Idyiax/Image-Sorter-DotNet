@@ -31,7 +31,10 @@
                     <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
                     <path d="M8.20624 4.96068L3.61005 9.55688L3.05003 12.357C2.98005 12.7068 3.28851 13.0153 3.63838 12.9453L6.43847 12.3853L11.0347 7.78911L8.20624 4.96068Z"></path>
                 </svg>
-            </div>
+            </div> 
+        </div>
+        <div class="d-flex align-items-center p-1 gap-1">
+            <input id="delete-image-button" type="button" value="Delete Image"/>
         </div>
     </div>
 
@@ -41,31 +44,90 @@
 </div>
 
 <script>
+    // Get the ID from the URL
+    let urlParams = new URLSearchParams(window.location.search);
+    const id = parseInt(urlParams.get('id') || urlParams.get('id') || '0');
+
+    const imageElement = document.getElementById('main-image');
+    const imageName = document.getElementById('image-name');
+
+    // Load image on DOM load
     document.addEventListener('DOMContentLoaded', async () => {
-        // Get the ID from the URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = parseInt(urlParams.get('id') || urlParams.get('id') || '0');
-        
         try {
             const response = await fetch(`/api/data/${id}`);
             const image = await response.json();
 
-            console.log(image);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             // Update the page with the image data
-            const imageElement = document.getElementById('main-image');
+            
             imageElement.src = image.filePathName;
             imageElement.alt = image.fileName;
 
-            const imageName = document.getElementById('image-name');
             imageName.innerText = image.fileName;
         } 
         
         catch (error) {
             console.error('Error fetching image:', error);
+        }
+    });
+
+    // Edit image name listener
+    document.getElementById('edit-image-name').addEventListener('click', async (e) => {
+        let newName = prompt("New image name:", imageName.innerText);
+
+        if(newName == null) return;
+
+        try {
+            const response = await fetch(`/api/data/${id}/${encodeURIComponent(newName)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (response.ok) {
+                imageName.innerText = newName;
+            }
+            else {
+                const errorData = await response.json();
+                alert(`Name change failed. ${errorData.message || 'Please try again.'}`);
+            }
+        }
+
+        catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while changing image name. Please try again.');
+        }
+    });
+
+    // Delete image listener
+    document.getElementById('delete-image-button').addEventListener('click', async (e) => {
+        let confirmText = "Are you sure you want to delete this image? \nThis cannot be undone.";
+        
+        if (confirm(confirmText) == false) return;
+
+        try {
+            const response = await fetch(`/api/data/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (response.ok) {
+                window.location.href = "/Home/LibraryView";
+            }
+            else {
+                alert('Delete failed. Please try again.');
+            }
+        }
+
+        catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the image. Please try again.');
         }
     });
 </script>

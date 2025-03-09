@@ -73,7 +73,7 @@ public class DataController : ControllerBase
         return await _context.Images.ToListAsync();
     }
 
-    [HttpPost("{id},{name}")]
+    [HttpPost("{id}/{name}")]
     public async Task<IActionResult> UpdateImageName(int id, string name)
     {
         var image = await _context.Images.FindAsync(id);
@@ -84,6 +84,8 @@ public class DataController : ControllerBase
         }
 
         image.FileName = name;
+
+        await _context.SaveChangesAsync();
 
         return Ok(image.FileName);
     }
@@ -100,6 +102,8 @@ public class DataController : ControllerBase
 
         var imagePath = image.FilePathName;
         _context.Images.Remove(image);
+
+        await _context.SaveChangesAsync();
 
         return Ok();
     }
