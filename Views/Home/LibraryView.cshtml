@@ -72,7 +72,7 @@
 
     async function loadImages() {
         try {
-            const response = await fetch('/api/data');
+            const response = await fetch('/api/data/');
             const images = await response.json();
             
             const libraryContainer = document.querySelector('.library-container');

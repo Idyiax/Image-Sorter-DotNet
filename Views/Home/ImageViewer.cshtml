@@ -54,7 +54,7 @@
     // Load image on DOM load
     document.addEventListener('DOMContentLoaded', async () => {
         try {
-            const response = await fetch(`/api/data/${id}`);
+            const response = await fetch(`/api/data/getimage/${id}`);
             const image = await response.json();
 
             if (!response.ok) {
