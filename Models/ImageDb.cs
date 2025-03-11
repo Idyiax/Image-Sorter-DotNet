@@ -62,10 +62,7 @@ namespace Image_Sorter_DotNet.Models
         [Required]
         public required string TagName { get; set; }
 
-        public required int ColourR { get; set; }
-        public required int ColourG { get; set; }
-        public required int ColourB { get; set; }
-
+        public required string ColourHex { get; set; }
 
         public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 

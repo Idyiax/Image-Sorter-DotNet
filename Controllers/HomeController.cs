@@ -33,6 +33,11 @@ public class HomeController : Controller
         return View(id);
     }
 
+    public IActionResult TagManager()
+    {
+        return View();
+    }
+
     public IActionResult Privacy()
     {
         return View();

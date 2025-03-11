@@ -1,0 +1,92 @@
+﻿<script src="//unpkg.com/force-graph"></script>
+
+<style>
+    h1 {
+        font-size: 16px;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    #edit-tag-name {
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        display: flex;
+        background-color: var(--bg-colour-light);
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.2s;
+    }
+
+        #edit-tag-name:hover {
+            opacity: 0.5;
+            cursor: pointer;
+        }
+
+</style>
+
+<div class="container w-100 h-100 mw-100 mh-100 p-0 d-inline-flex">
+    <div class="container-fluid bg-colour-dark rounded-2 p-0 overflow-hidden" style="width: 20%; margin-right: 8px;">
+        <div class="d-flex align-items-center p-1 gap-1">
+            <div id ="tag-create-mode">
+
+            </div>
+            <div id="tag-edit-mode">
+                <h1 id="tag-name" class="text-white fw-bold"> Test! <!-- Image Name Inserted Here--> </h1>
+                <div id="edit-tag-name">
+                    <svg width="16px" height="16px" style="fill: white;">
+                        <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
+                        <path d="M8.20624 4.96068L3.61005 9.55688L3.05003 12.357C2.98005 12.7068 3.28851 13.0153 3.63838 12.9453L6.43847 12.3853L11.0347 7.78911L8.20624 4.96068Z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="graph" class="container-fluid h-100 justify-content-center align-items-center overflow-hidden rounded-2 p-0" style="max-height: calc(100vh - 57px - 1rem); top: calc(57px + 0.5rem)">
+    
+    </div>
+</div>
+
+<script>
+    var tagData;
+    var selectedTag;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const graphContainer = document.getElementById('graph');
+
+        let response = await fetch('api/data/tagmanagerdata');
+        tagData = await response.json;
+
+        let width = graphContainer.clientWidth;
+        let height = graphContainer.clientHeight
+        const graph = new ForceGraph(graphContainer)
+            .graphData(tagData)
+            .width(width)
+            .height(height)
+            .backgroundColor("#2b2b2b")
+            .nodeCanvasObject((node, ctx, globalScale) => {
+                  const label = node.name;
+                  const fontSize = 12/globalScale;
+                  ctx.font = `${fontSize}px Sans-Serif`;
+                  const textWidth = ctx.measureText(label).width;
+                  const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize); // some padding
+
+                  ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                  ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillStyle = node.color;
+                  ctx.fillText(label, node.x, node.y);
+
+                  node.__bckgDimensions = bckgDimensions; // to re-use in nodePointerAreaPaint
+                })
+            .nodePointerAreaPaint((node, color, ctx) => {
+                  ctx.fillStyle = color;
+                  const bckgDimensions = node.__bckgDimensions;
+                  bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+            });
+        // h
+    })
+</script>

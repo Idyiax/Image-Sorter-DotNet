@@ -102,6 +102,39 @@ public class DataController : ControllerBase
         return await _context.Images.ToListAsync();
     }
 
+    [HttpGet("tagmanagerdata")]
+    public async Task<IActionResult> GetTagManagerData()
+    {
+        List<object> nodes = new();
+        List<object> links = new();
+
+        await _context.Tags.ForEachAsync((tag) =>
+        {
+            nodes.Add(new
+            {
+                id = tag.Id,
+                name = tag.TagName,
+                colour = tag.ColourHex
+            });
+        });
+
+        await _context.TagRelations.ForEachAsync((relation) =>
+        {
+            links.Add(new
+            {
+                source = relation.ParentTag,
+                target = relation.ChildTag
+            });
+        });
+
+        object data = new
+        {
+            nodes = nodes.ToArray(),
+            links = links.ToArray()
+        };
+
+        return Ok(data);
+    }
     #endregion Gets
     #region Posts
     /// <summary>
@@ -212,15 +245,13 @@ public class DataController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("{name}/{colour}")]
-    public async Task<IActionResult> AddTag(string name, Color colour)
+    [HttpPost("{name}/{string}")]
+    public async Task<IActionResult> AddTag(string name, string colourHex)
     {
         var tag = new Tags
         {
             TagName = name,
-            ColourR = colour.R,
-            ColourG = colour.G,
-            ColourB = colour.B,
+            ColourHex = colourHex,
             CreatedDate = DateTime.UtcNow
         };
 
