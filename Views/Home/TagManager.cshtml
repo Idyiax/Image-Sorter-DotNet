@@ -91,39 +91,42 @@
 <script>
     var tagData;
     var selectedTag;
+    var graph;
 
-    /*
     document.addEventListener('DOMContentLoaded', async () => {
         const graphContainer = document.getElementById('graph');
 
-        let response = await fetch('api/data/tag/managerdata');
-        tagData = await response.json;
+        const response = await fetch('/api/data/tag/managerdata');
 
-        console.log(tagData.nodes);
+        tagData = await response.json();
 
-        if(tagData.length == 0) return;
+        console.log(tagData);
+
+        if(tagData.nodes.length == 0) return;
 
         let width = graphContainer.clientWidth;
         let height = graphContainer.clientHeight
-        const graph = new ForceGraph(graphContainer)
+        graph = new ForceGraph(graphContainer)
             .graphData(tagData)
             .width(width)
             .height(height)
             .backgroundColor("#2b2b2b")
             .nodeCanvasObject((node, ctx, globalScale) => {
                   const label = node.name;
-                  const fontSize = 12/globalScale;
+                  const fontSize = 12;
                   ctx.font = `${fontSize}px Sans-Serif`;
                   const textWidth = ctx.measureText(label).width;
                   const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize); // some padding
 
-                  ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                  ctx.fillStyle = node.color;
                   ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
+                  //const roundRect = ctx.roundRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions, 20);
+                  //ctx.fill(roundRect);
 
                   ctx.textAlign = 'center';
                   ctx.textBaseline = 'middle';
-                  ctx.fillStyle = node.color;
-                  ctx.fillText(label, node.x, node.y);
+                  ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+                  ctx.fillText(node.name, node.x, node.y);
 
                   node.__bckgDimensions = bckgDimensions; // to re-use in nodePointerAreaPaint
                 })
@@ -133,7 +136,6 @@
                   bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
             });
     })
-    */
 
     const createTagButton = document.getElementById('create-tag-button');
     const editTagButton = document.getElementById('edit-tag-button')
@@ -177,11 +179,24 @@
 
             if (response.ok) {
                 this.reset();
+                const newTag = await response.json();
+
+                let { nodes, links } = graph.graphData();
+
+                nodes.push({
+                    id: newTag.Id,
+                    name: newTag.TagName,
+                    color: newTag.ColourHex
+                });
+
+                graph.graphData({ nodes, links });
+
+                //console.log(tagData.nodes);
             }
             else {
                 console.log(response.status);
                 console.log(response.headers);
-                console.log(await response.json(););
+                console.log(await response.json());
                 alert(`Tag creation failed. Please try again.`);
             }
         }

@@ -115,7 +115,7 @@ public class DataController : ControllerBase
             {
                 id = tag.Id,
                 name = tag.TagName,
-                colour = tag.ColourHex
+                color = tag.ColourHex
             });
         });
 
@@ -268,8 +268,8 @@ public class DataController : ControllerBase
         {
             _context.Tags.Add(tag);
             await _context.SaveChangesAsync();
-            return Ok();
-            //return CreatedAtAction(nameof(FindTag), new { id = tag.Id }, tag);
+            //return Ok();
+            return CreatedAtAction(nameof(GetTag), new { id = tag.Id }, tag);
         }
         catch (Exception e)
         {
