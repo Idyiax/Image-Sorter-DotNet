@@ -62,6 +62,7 @@ namespace Image_Sorter_DotNet.Models
         [Required]
         public required string TagName { get; set; }
 
+        [RegularExpression(@"^#[0-9A-Fa-f]{6}$")]
         public required string ColourHex { get; set; }
 
         public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;

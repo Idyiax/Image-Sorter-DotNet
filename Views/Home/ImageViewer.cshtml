@@ -54,7 +54,7 @@
     // Load image on DOM load
     document.addEventListener('DOMContentLoaded', async () => {
         try {
-            const response = await fetch(`/api/data/getimage/${id}`);
+            const response = await fetch(`/api/data/image/get/${id}`);
             const image = await response.json();
 
             if (!response.ok) {
@@ -81,8 +81,8 @@
         if(newName == null) return;
 
         try {
-            const response = await fetch(`/api/data/${id}/${encodeURIComponent(newName)}`, {
-                method: 'POST',
+            const response = await fetch(`/api/data/image/rename/${id}/${encodeURIComponent(newName)}`, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -93,7 +93,7 @@
             }
             else {
                 const errorData = await response.json();
-                alert(`Name change failed. ${errorData.message || 'Please try again.'}`);
+                alert(`Name change failed. ${errorData.errors.id[0] || 'Please try again.'}`);
             }
         }
 
@@ -110,8 +110,8 @@
         if (confirm(confirmText) == false) return;
 
         try {
-            const response = await fetch(`/api/data/${id}`, {
-                method: 'POST',
+            const response = await fetch(`/api/data/image/delete/${id}`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },

@@ -31,5 +31,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=LibraryView}/{id?}")
     .WithStaticAssets();
 
-
 app.Run();

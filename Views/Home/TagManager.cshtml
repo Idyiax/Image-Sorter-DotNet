@@ -7,6 +7,29 @@
         margin-bottom: 0;
     }
 
+    label {
+        color: var(--text-colour);
+    }
+
+    .mode-selector {
+        background-color: var(--bg-colour-main);
+        border-color: var(--border-colour);
+        border-width: 2px;
+        border-style: solid;
+    }
+
+        .mode-selector :hover {
+            background-color: var(--bg-colour-light);
+            cursor: pointer;
+        }
+
+        .mode-selector p {
+            color: white;
+            font-size: 20px;
+            font-weight: bolder;
+            margin: 4px;
+        }
+
     #edit-tag-name {
         width: 20px;
         height: 20px;
@@ -27,11 +50,29 @@
 
 <div class="container w-100 h-100 mw-100 mh-100 p-0 d-inline-flex">
     <div class="container-fluid bg-colour-dark rounded-2 p-0 overflow-hidden" style="width: 20%; margin-right: 8px;">
-        <div class="d-flex align-items-center p-1 gap-1">
-            <div id ="tag-create-mode">
-
+        <div class="row mb-1">
+            <div id="create-tag-button" class="mode-selector container-fluid col align-items-center justify-content-center" style="background-color: rgb(110, 110, 110);">
+                <p class="text-white" style="text-align: center;"> Create </p>
             </div>
-            <div id="tag-edit-mode">
+            <div id="edit-tag-button" class="mode-selector container-fluid col align-items-center justify-content-center">
+                <p class="text-white" style="text-align: center;"> Edit </p>
+            </div>
+        </div>
+
+        <div>
+            <div id="create-tag-menu">
+                <div class="d-flex align-items-center p-1 gap-1">
+                    <form id="uploadForm">
+                        <label for="name">Tag Name</label><br>
+                        <input type="text" id="name" name="name"><br>
+                        <label for="colourHex">Tag Colour</label><br>
+                        <input type="color" id="colourHex" name="colourHex"><br>
+                        <input type="submit" value="Submit">
+                    </form>
+                </div>
+            </div>
+
+            <div id="edit-tag-menu" style="display: none">
                 <h1 id="tag-name" class="text-white fw-bold"> Test! <!-- Image Name Inserted Here--> </h1>
                 <div id="edit-tag-name">
                     <svg width="16px" height="16px" style="fill: white;">
@@ -44,7 +85,6 @@
     </div>
 
     <div id="graph" class="container-fluid h-100 justify-content-center align-items-center overflow-hidden rounded-2 p-0" style="max-height: calc(100vh - 57px - 1rem); top: calc(57px + 0.5rem)">
-    
     </div>
 </div>
 
@@ -52,11 +92,16 @@
     var tagData;
     var selectedTag;
 
-    document.addEventListener('DOMContentLoaded', () => {
+    /*
+    document.addEventListener('DOMContentLoaded', async () => {
         const graphContainer = document.getElementById('graph');
 
-        let response = await fetch('api/data/tagmanagerdata');
+        let response = await fetch('api/data/tag/managerdata');
         tagData = await response.json;
+
+        console.log(tagData.nodes);
+
+        if(tagData.length == 0) return;
 
         let width = graphContainer.clientWidth;
         let height = graphContainer.clientHeight
@@ -87,6 +132,64 @@
                   const bckgDimensions = node.__bckgDimensions;
                   bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
             });
-        // h
     })
+    */
+
+    const createTagButton = document.getElementById('create-tag-button');
+    const editTagButton = document.getElementById('edit-tag-button')
+
+    const createTagMenu = document.getElementById('create-tag-menu');;
+    const editTagMenu = document.getElementById('edit-tag-menu');
+
+    createTagButton.addEventListener(('click'), () => {
+        createTagButton.style.backgroundColor = "rgb(110, 110, 110)";
+        editTagButton.style.backgroundColor = "var(--bg-colour-main)";
+
+        createTagMenu.style.display = "inherit";
+        editTagMenu.style.display = "none";
+    });
+
+    editTagButton.addEventListener(('click'), () => {
+        editTagButton.style.backgroundColor = "rgb(110, 110, 110)";
+        createTagButton.style.backgroundColor = "var(--bg-colour-main)";
+
+        editTagMenu.style.display = "inherit";
+        createTagMenu.style.display = "none";
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        let name = document.getElementById('name').value;
+        let colourHex = document.getElementById('colourHex').value;
+
+        try {
+            const response = await fetch(`/api/data/tag/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify ({
+                    name,
+                    colourHex
+                })
+            });
+
+            if (response.ok) {
+                this.reset();
+            }
+            else {
+                console.log(response.status);
+                console.log(response.headers);
+                console.log(await response.json(););
+                alert(`Tag creation failed. Please try again.`);
+            }
+        }
+
+        catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while adding the tag. Please try again.');
+        }
+    });
+
 </script>

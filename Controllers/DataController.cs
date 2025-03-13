@@ -5,6 +5,7 @@ using Image_Sorter_DotNet.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing;
 using static System.Net.Mime.MediaTypeNames;
+using System.Text.Json;
 
 namespace Image_Sorter_DotNet.Controllers;
 
@@ -25,7 +26,7 @@ public class DataController : ControllerBase
     /// </summary>
     /// <param name="id"> The id of the image. </param>
     /// <returns> The row of the specified image. </returns>
-    [HttpGet("getimage/{id}")]
+    [HttpGet("image/get/{id}")]
     public async Task<ActionResult<Images>> GetImage(int id)
     {
         var image = await _context.Images.FindAsync(id);
@@ -43,7 +44,7 @@ public class DataController : ControllerBase
     /// </summary>
     /// <param name="name"> The name of the image to find. </param>
     /// <returns> The row of the specified image. </returns>
-    [HttpGet("findimage/{name}")]
+    [HttpGet("image/find/{name}")]
     public async Task<ActionResult<Images>> FindImage(string name)
     {
         var image = await _context.Images.FirstOrDefaultAsync(i => i.FileName == name);
@@ -61,7 +62,7 @@ public class DataController : ControllerBase
     /// </summary>
     /// <param name="id"> The id of the tag. </param>
     /// <returns> The row of the specified tag. </returns>
-    [HttpGet("gettag/{id}")]
+    [HttpGet("tag/get/{id}")]
     public async Task<ActionResult<Tags>> GetTag(int id)
     {
         var tag = await _context.Tags.FindAsync(id);
@@ -79,7 +80,7 @@ public class DataController : ControllerBase
     /// </summary>
     /// <param name="name"> The name of the tag to find. </param>
     /// <returns> The row of the specified tag. </returns>
-    [HttpGet("findtag/{name}")]
+    [HttpGet("tag/find/{name}")]
     public async Task<ActionResult<Tags>> FindTag(string name)
     {
         var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == name);
@@ -96,13 +97,13 @@ public class DataController : ControllerBase
     /// Get all of the rows currently within the Images table.
     /// </summary>
     /// <returns> A list of all rows in the Images table. </returns>
-    [HttpGet]
+    [HttpGet("image/get/all")]
     public async Task<ActionResult<IEnumerable<Images>>> GetAllImages()
     {
         return await _context.Images.ToListAsync();
     }
 
-    [HttpGet("tagmanagerdata")]
+    [HttpGet("tag/managerdata")]
     public async Task<IActionResult> GetTagManagerData()
     {
         List<object> nodes = new();
@@ -133,7 +134,9 @@ public class DataController : ControllerBase
             links = links.ToArray()
         };
 
-        return Ok(data);
+        var json = JsonSerializer.Serialize(data);
+
+        return Ok(json);
     }
     #endregion Gets
     #region Posts
@@ -143,7 +146,7 @@ public class DataController : ControllerBase
     /// <param name="file"> The image file from a form. </param>
     /// <param name="name"> The image name from a form. </param>
     /// <returns> The row of the new image. </returns>
-    [HttpPost]
+    [HttpPost("image/add")]
     public async Task<ActionResult<Images>> AddImage([FromForm] IFormFile file, [FromForm] string? name)
     {
         // Create unique filename
@@ -204,7 +207,7 @@ public class DataController : ControllerBase
     /// <param name="id"> The id of the image to rename. </param>
     /// <param name="name"> The new name of the image. </param>
     /// <returns> The new file name. </returns>
-    [HttpPost("{id}/{name}")]
+    [HttpPut("image/rename/{id}/{name}")]
     public async Task<IActionResult> RenameImage(int id, string name)
     {
         var image = await _context.Images.FindAsync(id);
@@ -226,7 +229,7 @@ public class DataController : ControllerBase
     /// </summary>
     /// <param name="id"> The id of the image to delete. </param>
     /// <returns></returns>
-    [HttpPost("{id}")]
+    [HttpDelete("image/delete/{id}")]
     public async Task<IActionResult> DeleteImage(int id)
     {
         var image = await _context.Images.FindAsync(id);
@@ -245,13 +248,19 @@ public class DataController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("{name}/{string}")]
-    public async Task<IActionResult> AddTag(string name, string colourHex)
+    /// <summary>
+    /// Adds a tag to the Tags table.
+    /// </summary>
+    /// <param name="name"> The name of the tag. </param>
+    /// <param name="colourHex"> The colour of the tag. </param>
+    /// <returns></returns>
+    [HttpPost("tag/add")]
+    public async Task<IActionResult> AddTag([FromBody] AddTagRequest request)
     {
         var tag = new Tags
         {
-            TagName = name,
-            ColourHex = colourHex,
+            TagName = request.name,
+            ColourHex = request.colourHex,
             CreatedDate = DateTime.UtcNow
         };
 
@@ -259,14 +268,17 @@ public class DataController : ControllerBase
         {
             _context.Tags.Add(tag);
             await _context.SaveChangesAsync();
+            return Ok();
+            //return CreatedAtAction(nameof(FindTag), new { id = tag.Id }, tag);
         }
-
-        catch(Exception e)
+        catch (Exception e)
         {
-            return BadRequest($"Could not add the tag {name} because of the following error: {e}");
+            return BadRequest($"Could not add the tag: {e.Message}");
         }
-
-        return CreatedAtAction(nameof(FindTag), new { id = tag.Id }, tag);
     }
     #endregion Posts
+
+    #region Request Records
+    public record AddTagRequest(string name, string colourHex);
+    #endregion Request Records
 }

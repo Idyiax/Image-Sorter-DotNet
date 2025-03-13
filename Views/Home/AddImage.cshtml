@@ -23,7 +23,7 @@
 
 <div class="container-fluid d-inline-flex align-items-center" style="height: calc(100vh - 57px)">
     <div class="container-fluid h-100 p-0">
-        <form id="uploadForm" enctype="multipart/form-data" asp-controller="Data" asp-action="PostImage">
+        <form id="uploadForm" enctype="multipart/form-data" asp-controller="Data" asp-action="AddImage">
             <label for="file">Select Image</label><br>
             <input type="file" id="file" name="file" accept="image/*"><br>
             <label for="name">Image Name</label><br>
@@ -44,7 +44,7 @@
         const formData = new FormData(this);
 
         try {
-            const response = await fetch('/api/data', {
+            const response = await fetch('/api/data/image/add', {
                 method: 'POST',
                 body: formData
             });
