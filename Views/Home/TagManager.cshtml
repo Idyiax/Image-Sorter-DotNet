@@ -89,7 +89,6 @@
 </div>
 
 <script>
-    var tagData;
     var selectedTag;
     var graph;
 
@@ -98,7 +97,7 @@
 
         const response = await fetch('/api/data/tag/managerdata');
 
-        tagData = await response.json();
+        const tagData = await response.json();
 
         console.log(tagData);
 
@@ -184,14 +183,12 @@
                 let { nodes, links } = graph.graphData();
 
                 nodes.push({
-                    id: newTag.Id,
-                    name: newTag.TagName,
-                    color: newTag.ColourHex
+                    id: newTag.id,
+                    name: newTag.tagName,
+                    color: newTag.colourHex
                 });
 
                 graph.graphData({ nodes, links });
-
-                //console.log(tagData.nodes);
             }
             else {
                 console.log(response.status);
@@ -206,5 +203,4 @@
             alert('An error occurred while adding the tag. Please try again.');
         }
     });
-
 </script>
