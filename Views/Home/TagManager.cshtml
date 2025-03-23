@@ -101,7 +101,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const graphContainer = document.getElementById('graph');
 
-        const response = await fetch('/api/data/tag/managerdata');
+        const response = await fetch('/api/tags/managerdata');
         const tagData = await response.json();
 
         let width = graphContainer.clientWidth;
@@ -154,12 +154,13 @@
         }
         else{
             selectedTag = null;
-        }
 
-        // Reset the edit mode text when deselecting (if already in edit mode)
-        if(inEditMode){
-            SetEditMode();
+            // Reset the edit mode text when deselecting (if already in edit mode)
+            if(inEditMode){
+                SetEditMode();
+            }
         }
+  
     });
 
     const createTagButton = document.getElementById('create-tag-button');
@@ -179,7 +180,6 @@
     });
 
     editTagButton.addEventListener(('click'), () => {
-        console.log("Edit tag button listener?");
         SetEditMode(selectedTag);
     });
     
@@ -209,14 +209,62 @@
         }
     }
 
-    document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+    document.getElementById('edit-tag-name').addEventListener('click', async (event) => {
+        const newName = prompt("New tag name:", tagNameElement.innerHTML);
+
+        if(newName == null) return;
+
+        try {
+            const response = await fetch(`/api/tags/${selectedTag.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json-patch+json'
+                },
+                body: JSON.stringify(
+                    [
+                        {
+                            "op": "replace",
+                            "path": "/tagName",
+                            "value": `${newName}`
+                        }
+                    ]
+                )
+            });
+
+            if (response.ok) {
+                const updatedTag = await response.json(); 
+
+                console.log(updatedTag);
+
+                tagNameElement.innerText = updatedTag.tagName;
+
+                let { nodes, links } = graph.graphData();
+
+                nodes[updatedTag.id].tagName = updatedTag.tagName;
+
+                graph.graphData({ nodes, links });
+            }
+            else {
+                console.log(await response.json());
+                console.log(response.status);
+                alert(`Name change failed.`);
+            }
+        }
+
+        catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while changing image name. Please try again.');
+        }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
         let name = document.getElementById('name').value;
         let colourHex = document.getElementById('colourHex').value;
 
         try {
-            const response = await fetch(`/api/data/tag/add`, {
+            const response = await fetch(`/api/tags`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

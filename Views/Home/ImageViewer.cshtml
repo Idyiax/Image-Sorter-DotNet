@@ -76,7 +76,7 @@
 
     // Edit image name listener
     document.getElementById('edit-image-name').addEventListener('click', async (e) => {
-        let newName = prompt("New image name:", imageName.innerText);
+        const newName = prompt("New image name:", imageName.innerText);
 
         if(newName == null) return;
 

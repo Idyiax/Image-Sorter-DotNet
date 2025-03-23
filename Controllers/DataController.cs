@@ -1,10 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Image_Sorter_DotNet.Models;
 using Image_Sorter_DotNet.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text.Json;
 
 namespace Image_Sorter_DotNet.Controllers;
@@ -56,42 +53,6 @@ public class DataController : ControllerBase
 
         return Ok(image);
     }
-    
-    /// <summary>
-    /// Get the row of a specified tag from the Tags table.
-    /// </summary>
-    /// <param name="id"> The id of the tag. </param>
-    /// <returns> The row of the specified tag. </returns>
-    [HttpGet("tag/get/{id}")]
-    public async Task<ActionResult<Tags>> GetTag(int id)
-    {
-        var tag = await _context.Tags.FindAsync(id);
-
-        if (tag == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(tag);
-    }
-
-    /// <summary>
-    /// Find a tag by it's name.
-    /// </summary>
-    /// <param name="name"> The name of the tag to find. </param>
-    /// <returns> The row of the specified tag. </returns>
-    [HttpGet("tag/find/{name}")]
-    public async Task<ActionResult<Tags>> FindTag(string name)
-    {
-        var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == name);
-
-        if (tag == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(tag);
-    }
 
     /// <summary>
     /// Get all of the rows currently within the Images table.
@@ -103,41 +64,6 @@ public class DataController : ControllerBase
         return await _context.Images.ToListAsync();
     }
 
-    [HttpGet("tag/managerdata")]
-    public async Task<IActionResult> GetTagManagerData()
-    {
-        List<object> nodes = new();
-        List<object> links = new();
-
-        await _context.Tags.ForEachAsync((tag) =>
-        {
-            nodes.Add(new
-            {
-                id = tag.Id,
-                name = tag.TagName,
-                color = tag.ColourHex
-            });
-        });
-
-        await _context.TagRelations.ForEachAsync((relation) =>
-        {
-            links.Add(new
-            {
-                source = relation.ParentTag,
-                target = relation.ChildTag
-            });
-        });
-
-        object data = new
-        {
-            nodes = nodes.ToArray(),
-            links = links.ToArray()
-        };
-
-        var json = JsonSerializer.Serialize(data);
-
-        return Ok(json);
-    }
     #endregion Gets
     #region Posts
     /// <summary>
@@ -247,38 +173,5 @@ public class DataController : ControllerBase
 
         return Ok();
     }
-
-    /// <summary>
-    /// Adds a tag to the Tags table.
-    /// </summary>
-    /// <param name="name"> The name of the tag. </param>
-    /// <param name="colourHex"> The colour of the tag. </param>
-    /// <returns></returns>
-    [HttpPost("tag/add")]
-    public async Task<IActionResult> AddTag([FromBody] AddTagRequest request)
-    {
-        var tag = new Tags
-        {
-            TagName = request.name,
-            ColourHex = request.colourHex,
-            CreatedDate = DateTime.UtcNow
-        };
-
-        try
-        {
-            _context.Tags.Add(tag);
-            await _context.SaveChangesAsync();
-            //return Ok();
-            return CreatedAtAction(nameof(GetTag), new { id = tag.Id }, tag);
-        }
-        catch (Exception e)
-        {
-            return BadRequest($"Could not add the tag: {e.Message}");
-        }
-    }
     #endregion Posts
-
-    #region Request Records
-    public record AddTagRequest(string name, string colourHex);
-    #endregion Request Records
 }
