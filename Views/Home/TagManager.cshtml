@@ -98,6 +98,7 @@
     var graph;
     var inEditMode = false;
 
+    // Create force-graph
     document.addEventListener('DOMContentLoaded', async () => {
         const graphContainer = document.getElementById('graph');
 
@@ -209,6 +210,7 @@
         }
     }
 
+    // Rename tag
     document.getElementById('edit-tag-name').addEventListener('click', async (event) => {
         const newName = prompt("New tag name:", tagNameElement.innerHTML);
 
@@ -234,15 +236,16 @@
             if (response.ok) {
                 const updatedTag = await response.json(); 
 
-                console.log(updatedTag);
-
+                // Update name in edit panel
                 tagNameElement.innerText = updatedTag.tagName;
 
-                let { nodes, links } = graph.graphData();
+                // Update name in graph
+                const nodeToUpdate = graph.graphData().nodes.find(node => node.id === updatedTag.id);
+                nodeToUpdate.name = updatedTag.tagName;
 
-                nodes[updatedTag.id].tagName = updatedTag.tagName;
-
-                graph.graphData({ nodes, links });
+                // Update canvas object without redrawing entire graph
+                graph.pauseAnimation();
+                graph.resumeAnimation();
             }
             else {
                 console.log(await response.json());
@@ -257,6 +260,7 @@
         }
     });
 
+    // Add new tag
     document.getElementById('uploadForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
