@@ -107,7 +107,7 @@ public class TagsController : ControllerBase
 
         if (tag == null)
         {
-            return NotFound($"The tag with th id '{id}' could not be found.");
+            return NotFound($"The tag with the id '{id}' could not be found.");
         }
 
         patchDoc.ApplyTo(tag);

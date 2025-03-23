@@ -264,8 +264,8 @@
     document.getElementById('uploadForm').addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        let name = document.getElementById('name').value;
-        let colourHex = document.getElementById('colourHex').value;
+        const name = document.getElementById('name').value;
+        const colourHex = document.getElementById('colourHex').value;
 
         try {
             const response = await fetch(`/api/tags`, {

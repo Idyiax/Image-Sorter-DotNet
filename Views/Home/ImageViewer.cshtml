@@ -54,7 +54,7 @@
     // Load image on DOM load
     document.addEventListener('DOMContentLoaded', async () => {
         try {
-            const response = await fetch(`/api/data/image/get/${id}`);
+            const response = await fetch(`/api/images/${id}`);
             const image = await response.json();
 
             if (!response.ok) {
@@ -81,11 +81,20 @@
         if(newName == null) return;
 
         try {
-            const response = await fetch(`/api/data/image/rename/${id}/${encodeURIComponent(newName)}`, {
-                method: 'PUT',
+            const response = await fetch(`/api/images/${id}/`, {
+                method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json-patch+json'
                 },
+                body: JSON.stringify(
+                    [
+                        {
+                            "op": "replace",
+                            "path": "/fileName",
+                            "value": `${encodeURIComponent(newName)}`
+                        }
+                    ]
+                )
             });
 
             if (response.ok) {
@@ -110,7 +119,7 @@
         if (confirm(confirmText) == false) return;
 
         try {
-            const response = await fetch(`/api/data/image/delete/${id}`, {
+            const response = await fetch(`/api/images/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'

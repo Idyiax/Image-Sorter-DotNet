@@ -3,27 +3,28 @@ using Image_Sorter_DotNet.Models;
 using Image_Sorter_DotNet.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Image_Sorter_DotNet.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DataController : ControllerBase
+public class ImagesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
-    public DataController(ApplicationDbContext context)
+    public ImagesController(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    #region Gets
-    /// <summary>
-    /// Get the row of a specified image from the Images table.
-    /// </summary>
-    /// <param name="id"> The id of the image. </param>
-    /// <returns> The row of the specified image. </returns>
-    [HttpGet("image/get/{id}")]
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Images>>> GetAllImages()
+    {
+        return await _context.Images.ToListAsync();
+    }
+
+    [HttpGet("{id}")]
     public async Task<ActionResult<Images>> GetImage(int id)
     {
         var image = await _context.Images.FindAsync(id);
@@ -35,44 +36,8 @@ public class DataController : ControllerBase
 
         return Ok(image);
     }
-    
-    /// <summary>
-    /// Find an image by it's name.
-    /// </summary>
-    /// <param name="name"> The name of the image to find. </param>
-    /// <returns> The row of the specified image. </returns>
-    [HttpGet("image/find/{name}")]
-    public async Task<ActionResult<Images>> FindImage(string name)
-    {
-        var image = await _context.Images.FirstOrDefaultAsync(i => i.FileName == name);
 
-        if (image == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(image);
-    }
-
-    /// <summary>
-    /// Get all of the rows currently within the Images table.
-    /// </summary>
-    /// <returns> A list of all rows in the Images table. </returns>
-    [HttpGet("image/get/all")]
-    public async Task<ActionResult<IEnumerable<Images>>> GetAllImages()
-    {
-        return await _context.Images.ToListAsync();
-    }
-
-    #endregion Gets
-    #region Posts
-    /// <summary>
-    /// Add an image to the Images table.
-    /// </summary>
-    /// <param name="file"> The image file from a form. </param>
-    /// <param name="name"> The image name from a form. </param>
-    /// <returns> The row of the new image. </returns>
-    [HttpPost("image/add")]
+    [HttpPost]
     public async Task<ActionResult<Images>> AddImage([FromForm] IFormFile file, [FromForm] string? name)
     {
         // Create unique filename
@@ -127,35 +92,28 @@ public class DataController : ControllerBase
         return CreatedAtAction(nameof(GetImage), new { id = image.Id }, image);
     }
 
-    /// <summary>
-    /// Updates the name of a given image in the Images table.
-    /// </summary>
-    /// <param name="id"> The id of the image to rename. </param>
-    /// <param name="name"> The new name of the image. </param>
-    /// <returns> The new file name. </returns>
-    [HttpPut("image/rename/{id}/{name}")]
-    public async Task<IActionResult> RenameImage(int id, string name)
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> PatchImage(int id, [FromBody] JsonPatchDocument<Images> patchDoc)
     {
+        if (patchDoc == null)
+        {
+            return BadRequest("No patch document sent.");
+        }
+
         var image = await _context.Images.FindAsync(id);
 
         if (image == null)
         {
-            return NotFound();
+            return NotFound($"The image with the id '{id}' could not be found.");
         }
 
-        image.FileName = name;
+        patchDoc.ApplyTo(image);
 
         await _context.SaveChangesAsync();
-
-        return Ok(image.FileName);
+        return Ok(image);
     }
 
-    /// <summary>
-    /// Deletes an image from the Images table.
-    /// </summary>
-    /// <param name="id"> The id of the image to delete. </param>
-    /// <returns></returns>
-    [HttpDelete("image/delete/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteImage(int id)
     {
         var image = await _context.Images.FindAsync(id);
@@ -173,5 +131,4 @@ public class DataController : ControllerBase
 
         return Ok();
     }
-    #endregion Posts
 }
