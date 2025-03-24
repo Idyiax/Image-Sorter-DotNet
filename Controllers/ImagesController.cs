@@ -19,13 +19,23 @@ public class ImagesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Images>>> GetAllImages()
+    public async Task<ActionResult<IEnumerable<Images>>> GetImages()
     {
-        return await _context.Images.ToListAsync();
+        List<Images> images = await _context.Images.ToListAsync();
+
+        if (images == null || images.Count == 0)
+        {
+            return NoContent();
+        }
+
+        else
+        {
+            return Ok(images);
+        }
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Images>> GetImage(int id)
+    public async Task<IActionResult> GetImage(int id)
     {
         var image = await _context.Images.FindAsync(id);
 
@@ -38,7 +48,7 @@ public class ImagesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Images>> AddImage([FromForm] IFormFile file, [FromForm] string? name)
+    public async Task<IActionResult> AddImage([FromForm] IFormFile file, [FromForm] string? name)
     {
         // Create unique filename
         var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
@@ -130,5 +140,44 @@ public class ImagesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok();
+    }
+
+
+    [HttpGet("{id}/tags")]
+    public async Task<ActionResult<IEnumerable<Tags>>> GetTags(int id)
+    {
+        List<Tags> tags =  await _context.TagConnections
+            .Where(tagConnection => tagConnection.ImageId == id)
+            .Join(_context.Tags,
+                tagConnection => tagConnection.TagId,
+                tag => tag.Id,
+                (tagConnection, tag) => tag)
+            .ToListAsync();
+
+        if (tags == null || tags.Count == 0)
+        {
+            return NoContent();
+        }
+
+        else
+        {
+            return Ok(tags);
+        }
+    }
+
+    [HttpPost("{id}/tags")]
+    public async Task<IActionResult> AddTag(int id, [FromBody] int tagId)
+    {
+        var connection = new TagConnections
+        {
+            ImageId = id,
+            TagId = tagId,
+            CreatedDate = DateTime.UtcNow
+        };
+        
+        _context.TagConnections.Add(connection);
+        await _context.SaveChangesAsync();
+
+        return Ok(connection);
     }
 }

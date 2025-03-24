@@ -20,10 +20,37 @@
             cursor: pointer;
         }
 
+    #tags-container {
+        min-height: 120px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .tag-container {
+        padding: 4px 8px 4px 8px;
+        border-radius: 16px;
+        white-space: nowrap;
+        height: fit-content;
+        margin-bottom: 4px;
+        transition: filter 0.1s;
+    }
+        .tag-container:hover {
+            filter: brightness(125%);
+            cursor: pointer;
+        }
+
+    .tag-text {
+        color: white;
+        font-weight: bold;
+        line-height: 1;
+        user-select: none;
+        margin: 0px;
+    }
 </style>
 
 <div class="container w-100 h-100 mw-100 mh-100 p-0 d-inline-block">
     <div class="h-100 bg-colour-dark rounded-2" style="width: 20%">
+        <!-- Image Renaming -->
         <div class="d-flex align-items-center p-1 gap-1">
             <h1 id="image-name" class="text-white fw-bold"> <!-- Image Name Inserted Here--> </h1>
             <div id="edit-image-name">
@@ -33,8 +60,23 @@
                 </svg>
             </div> 
         </div>
+        <!-- Image Deleting -->
         <div class="d-flex align-items-center p-1 gap-1">
             <input id="delete-image-button" type="button" value="Delete Image"/>
+        </div>
+        <!-- Tag Managing -->
+        <div class="p-2">
+            <div class="container-fluid pb-2 overflow-hidden">
+                <h1 class="text-white fw-bold"> Tags </h1>
+            </div>
+            <div id="tags-container" class="container-fluid rounded bg-colour-darker p-2 gap-1">
+                <div class="tag-container" style="background-color: aquamarine">
+                    <h1 class="tag-text"> Test </h1>
+                </div>
+                <div class="tag-container" style="background-color: coral">
+                    <h1 class="tag-text"> Second Test </h1>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -50,9 +92,20 @@
 
     const imageElement = document.getElementById('main-image');
     const imageName = document.getElementById('image-name');
+    const tagsContainer = document.getElementById('tags-container');
 
-    // Load image on DOM load
+    let tags = [];
+
+    // DOM loaded
     document.addEventListener('DOMContentLoaded', async () => {
+        DisplayImage();
+        LoadTags();
+    });
+
+    document.getElementById('edit-image-name').addEventListener('click', EditImageName);
+    document.getElementById('delete-image-button').addEventListener('click', DeleteImage);
+
+    async function DisplayImage() {
         try {
             const response = await fetch(`/api/images/${id}`);
             const image = await response.json();
@@ -62,20 +115,18 @@
             }
 
             // Update the page with the image data
-            
+
             imageElement.src = image.filePathName;
             imageElement.alt = image.fileName;
 
             imageName.innerText = image.fileName;
-        } 
-        
+        }
+
         catch (error) {
             console.error('Error fetching image:', error);
         }
-    });
-
-    // Edit image name listener
-    document.getElementById('edit-image-name').addEventListener('click', async (e) => {
+    }
+    async function EditImageName() {
         const newName = prompt("New image name:", imageName.innerText);
 
         if(newName == null) return;
@@ -91,7 +142,7 @@
                         {
                             "op": "replace",
                             "path": "/fileName",
-                            "value": `${encodeURIComponent(newName)}`
+                            "value": newName
                         }
                     ]
                 )
@@ -110,12 +161,10 @@
             console.error('Error:', error);
             alert('An error occurred while changing image name. Please try again.');
         }
-    });
-
-    // Delete image listener
-    document.getElementById('delete-image-button').addEventListener('click', async (e) => {
+    }
+    async function DeleteImage() {
         let confirmText = "Are you sure you want to delete this image? \nThis cannot be undone.";
-        
+
         if (confirm(confirmText) == false) return;
 
         try {
@@ -138,5 +187,58 @@
             console.error('Error:', error);
             alert('An error occurred while deleting the image. Please try again.');
         }
-    });
+    }
+    async function LoadTags() {
+        try {
+            const response = await fetch(`/api/images/${id}/tags`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            if(response.status != 204){
+                tags = await response.json();
+                await tags.forEach(tag => DisplayTag(tag));
+            }
+            
+            await CreateAddTagButton();
+        }
+
+        catch (error) {
+            console.error('Error fetching tags:', error);
+        }
+    }
+    async function DisplayTag(tag) {
+        const newTag = document.createElement('div');
+        const tagText = document.createElement('h1');
+
+        newTag.className = 'tag-container';
+        newTag.style.backgroundColor = tag.colourHex;
+
+        tagText.className = 'tag-text';
+        tagText.textContent = tag.tagName;
+
+        newTag.appendChild(tagText);
+        tagsContainer.appendChild(newTag);
+    }
+    async function CreateAddTagButton() {
+        const newTag = document.createElement('div');
+        const tagText = document.createElement('h1');
+
+        newTag.classList = 'tag-container bg-colour-light';
+
+        tagText.className = 'tag-text';
+        tagText.textContent = '+';
+
+        newTag.appendChild(tagText);
+        tagsContainer.appendChild(newTag);
+
+        newTag.addEventListener('click', () => AddTagMenu(true));
+    }
+    async function AddTagMenu(isVisible) {
+        console.log("OwO");
+    }
+    async function AddTag() {
+
+    }
 </script>

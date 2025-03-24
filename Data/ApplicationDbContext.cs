@@ -42,10 +42,16 @@ namespace Image_Sorter_DotNet.Data
                 .HasForeignKey(tr => tr.ChildTagId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             modelBuilder.Entity<TagConnections>()
-                .HasOne(icc => icc.Tag)
-                .WithMany(ic => ic.TagConnections)
-                .HasForeignKey(icc => icc.TagId);
+                .HasOne(tc => tc.Image)
+                .WithMany(i => i.TagConnections)
+                .HasForeignKey(tc => tc.ImageId);
+
+            modelBuilder.Entity<TagConnections>()
+                .HasOne(tc => tc.Tag)
+                .WithMany(t => t.TagConnections)
+                .HasForeignKey(tc => tc.TagId);  
         }
     }
 }

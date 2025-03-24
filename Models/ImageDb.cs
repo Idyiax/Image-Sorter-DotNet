@@ -14,10 +14,10 @@ namespace Image_Sorter_DotNet.Models
 
         public required string FilePathName { get; set; }
 
-        public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        [AllowNull]
-        public virtual ICollection<CollectionConnections> CollectionConnection { get; set; }
+        public virtual ICollection<CollectionConnections>? CollectionConnection { get; set; }
+        public virtual ICollection<TagConnections>? TagConnections { get; set; }
     }
 
     public class Collections
@@ -28,10 +28,9 @@ namespace Image_Sorter_DotNet.Models
         [Required]
         public required string CollectionName { get; set; }
 
-        public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        [AllowNull]
-        public virtual ICollection<CollectionConnections> CollectionConnection { get; set; }
+        public virtual ICollection<CollectionConnections>? CollectionConnection { get; set; }
     }
 
     public class CollectionConnections
@@ -44,14 +43,16 @@ namespace Image_Sorter_DotNet.Models
 
         public required int CollectionId { get; set; }
 
-        public required string Index { get; set; }
+        public required string CollectionName { get; set; }
 
-        public required string AltIndex { get; set; }
+        public required int Index { get; set; }
 
-        public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public int AltIndex { get; set; } = 0;
 
-        public required virtual Images Image { get; set; }
-        public required virtual Collections Collection { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+        public virtual Images? Image { get; set; }
+        public virtual Collections? Collection { get; set; }
     }
 
     public class Tags
@@ -65,14 +66,11 @@ namespace Image_Sorter_DotNet.Models
         [RegularExpression(@"^#[0-9A-Fa-f]{6}$")]
         public required string ColourHex { get; set; }
 
-        public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        [AllowNull]
-        public virtual ICollection<TagRelations> ParentTagRelations { get; set; }
-        [AllowNull]
-        public virtual ICollection<TagRelations> ChildTagRelations { get; set; }
-        [AllowNull]
-        public virtual ICollection<TagConnections> TagConnections { get; set; }
+        public virtual ICollection<TagRelations>? ParentTagRelations { get; set; }
+        public virtual ICollection<TagRelations>? ChildTagRelations { get; set; }
+        public virtual ICollection<TagConnections>? TagConnections { get; set; }
     }
 
     public class TagRelations
@@ -85,10 +83,10 @@ namespace Image_Sorter_DotNet.Models
 
         public required int ChildTagId { get; set; }
 
-        public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        public required Tags ParentTag { get; set; }
-        public required Tags ChildTag { get; set; }
+        public virtual Tags? ParentTag { get; set; }
+        public virtual Tags? ChildTag { get; set; }
     }
 
     public class TagConnections
@@ -101,9 +99,9 @@ namespace Image_Sorter_DotNet.Models
 
         public required int ImageId { get; set; }
 
-        public required DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
-        public required Tags Tag { get; set; }
-        public required Images Image { get; set; }
+        public virtual Tags? Tag { get; set; }
+        public virtual Images? Image { get; set; }
     }
 }
