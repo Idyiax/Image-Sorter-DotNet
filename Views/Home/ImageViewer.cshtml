@@ -230,7 +230,9 @@
             const createNewTag = confirm(`The tag "${name}" does not currently exist.\nWould you like to create it?`)
 
             if(createNewTag) {
+                console.log("Create new tag");
                 tag = await CreateTag(name)
+                console.log(tag);
             }
 
             else {
@@ -267,12 +269,32 @@
             return;
         }
 
-        const addedTag = await tagResponse.json();
+        const newTag = await tagResponse.json();
 
-        tags.push(addedTag);
-        DisplayTag(addedTag);
+        tags.push(newTag);
+        DisplayTag(newTag);
     }
     async function CreateTag(name) {
+        const colourHex = "#ff7f50";
 
+        const response = await fetch(`/api/tags`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify ({
+                name,
+                colourHex
+            })
+        });
+
+        if(!response.ok){
+            console.log(response);
+            return;
+        }
+
+        const tag = await response.json()
+
+        return tag;
     }
 </script>
