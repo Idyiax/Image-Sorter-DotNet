@@ -102,7 +102,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         const graphContainer = document.getElementById('graph');
 
-        const response = await fetch('/api/tags/managerdata');
+        const response = await fetch('/api/tags/manager-data');
         const tagData = await response.json();
 
         let width = graphContainer.clientWidth;

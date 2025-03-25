@@ -70,11 +70,8 @@
                 <h1 class="text-white fw-bold"> Tags </h1>
             </div>
             <div id="tags-container" class="container-fluid rounded bg-colour-darker p-2 gap-1">
-                <div class="tag-container" style="background-color: aquamarine">
-                    <h1 class="tag-text"> Test </h1>
-                </div>
-                <div class="tag-container" style="background-color: coral">
-                    <h1 class="tag-text"> Second Test </h1>
+                <div id="add-tag-button" class="tag-container bg-colour-light">
+                    <h1 class="tag-text">+</h1>
                 </div>
             </div>
         </div>
@@ -93,6 +90,7 @@
     const imageElement = document.getElementById('main-image');
     const imageName = document.getElementById('image-name');
     const tagsContainer = document.getElementById('tags-container');
+    const addTagButton = document.getElementById('add-tag-button');
 
     let tags = [];
 
@@ -104,6 +102,7 @@
 
     document.getElementById('edit-image-name').addEventListener('click', EditImageName);
     document.getElementById('delete-image-button').addEventListener('click', DeleteImage);
+    addTagButton.addEventListener('click', AddTag);
 
     async function DisplayImage() {
         try {
@@ -200,8 +199,6 @@
                 tags = await response.json();
                 await tags.forEach(tag => DisplayTag(tag));
             }
-            
-            await CreateAddTagButton();
         }
 
         catch (error) {
@@ -219,26 +216,63 @@
         tagText.textContent = tag.tagName;
 
         newTag.appendChild(tagText);
-        tagsContainer.appendChild(newTag);
-    }
-    async function CreateAddTagButton() {
-        const newTag = document.createElement('div');
-        const tagText = document.createElement('h1');
-
-        newTag.classList = 'tag-container bg-colour-light';
-
-        tagText.className = 'tag-text';
-        tagText.textContent = '+';
-
-        newTag.appendChild(tagText);
-        tagsContainer.appendChild(newTag);
-
-        newTag.addEventListener('click', () => AddTagMenu(true));
-    }
-    async function AddTagMenu(isVisible) {
-        console.log("OwO");
+        tagsContainer.insertBefore(newTag, addTagButton);
     }
     async function AddTag() {
+        const name = prompt('Add tag with the following name:');
+
+        const findResponse = await fetch(`/api/tags/find?name=${name}`);
+
+        var tag;
+
+        // If tag can't be found, prompt to create it and then add it.
+        if(findResponse.status == 404) {
+            const createNewTag = confirm(`The tag "${name}" does not currently exist.\nWould you like to create it?`)
+
+            if(createNewTag) {
+                tag = await CreateTag(name)
+            }
+
+            else {
+                return;
+            }
+        }
+
+        else {
+            if(!findResponse.ok) {
+                return;
+            }
+            tag = await findResponse.json();
+        }
+
+        // Add the new tag
+        const addResponse = await fetch(`/api/images/${id}/tags`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(tag.id)
+        });
+
+        if(!addResponse.ok) {
+            return;
+        }
+
+        // Add new tag visually
+        const addedConnection = await addResponse.json();
+
+        const tagResponse = await fetch(`/api/tags/${addedConnection.tagId}`)
+
+        if(!tagResponse.ok) {
+            return;
+        }
+
+        const addedTag = await tagResponse.json();
+
+        tags.push(addedTag);
+        DisplayTag(addedTag);
+    }
+    async function CreateTag(name) {
 
     }
 </script>

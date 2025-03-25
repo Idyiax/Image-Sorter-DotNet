@@ -82,7 +82,6 @@ public class ImagesController : ControllerBase
         {
             FileName = name == null ? "" : name,
             FilePathName = $"/img/{uniqueFileName}",
-            CreatedDate = DateTime.UtcNow
         };
 
         try
@@ -172,7 +171,6 @@ public class ImagesController : ControllerBase
         {
             ImageId = id,
             TagId = tagId,
-            CreatedDate = DateTime.UtcNow
         };
         
         _context.TagConnections.Add(connection);

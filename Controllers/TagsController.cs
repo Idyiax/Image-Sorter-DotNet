@@ -71,6 +71,19 @@ public class TagsController : ControllerBase
         return Ok(tag);
     }
 
+    [HttpGet("find")]
+    public async Task<ActionResult<Tags>> FindTag([FromQuery] string name)
+    {
+        Tags? tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == name);
+
+        if (tag == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(tag);
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult<Tags>> DeleteTag(int id)
     {
@@ -116,7 +129,7 @@ public class TagsController : ControllerBase
         return Ok(tag);
     }
 
-    [HttpGet("managerdata")]
+    [HttpGet("manager-data")]
     public async Task<IActionResult> GetTagManagerData()
     {
         List<object> nodes = new();
