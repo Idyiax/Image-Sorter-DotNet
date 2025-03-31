@@ -23,7 +23,9 @@
     #tags-container {
         min-height: 120px;
         display: flex;
-        align-items: flex-start;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        overflow: hidden;
     }
 
     .tag-container {
@@ -33,6 +35,7 @@
         height: fit-content;
         margin-bottom: 4px;
         transition: filter 0.1s;
+        overflow: hidden;
     }
         .tag-container:hover {
             filter: brightness(125%);
@@ -45,24 +48,38 @@
         line-height: 1;
         user-select: none;
         margin: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
+
+    #delete-image-button {
+        background-color: #cc0000;
+        color: #ff8888;
+        border-radius: 4px;
+        border-color: #aa0000;
+        opacity: 75%;
+        transition: filter 0.1s;
+    }
+
+        #delete-image-button:hover {
+            filter: brightness(125%);
+            cursor: pointer;
+        }
 </style>
 
 <div class="container w-100 h-100 mw-100 mh-100 p-0 d-inline-block">
     <div class="h-100 bg-colour-dark rounded-2" style="width: 20%">
         <!-- Image Renaming -->
-        <div class="d-flex align-items-center p-1 gap-1">
-            <h1 id="image-name" class="text-white fw-bold"> <!-- Image Name Inserted Here--> </h1>
-            <div id="edit-image-name">
-                <svg width="16px" height="16px" style="fill: white;">
-                    <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
-                    <path d="M8.20624 4.96068L3.61005 9.55688L3.05003 12.357C2.98005 12.7068 3.28851 13.0153 3.63838 12.9453L6.43847 12.3853L11.0347 7.78911L8.20624 4.96068Z"></path>
-                </svg>
-            </div> 
-        </div>
-        <!-- Image Deleting -->
-        <div class="d-flex align-items-center p-1 gap-1">
-            <input id="delete-image-button" type="button" value="Delete Image"/>
+        <div class="p-2">
+            <div class="d-flex align-items-center p-1 gap-1">
+                <h1 id="image-name" class="text-white fw-bold"> <!-- Image Name Inserted Here--> </h1>
+                <div id="edit-image-name">
+                    <svg width="16px" height="16px" style="fill: white;">
+                        <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
+                        <path d="M8.20624 4.96068L3.61005 9.55688L3.05003 12.357C2.98005 12.7068 3.28851 13.0153 3.63838 12.9453L6.43847 12.3853L11.0347 7.78911L8.20624 4.96068Z"></path>
+                    </svg>
+                </div>
+            </div>
         </div>
         <!-- Tag Managing -->
         <div class="p-2">
@@ -75,8 +92,14 @@
                 </div>
             </div>
         </div>
+        <!-- Image Deleting -->
+        <div class="p-2">
+            <div class="d-flex align-items-center p-1 gap-1">
+                <input id="delete-image-button" type="button" value="Delete Image" />
+            </div>
+        </div>
     </div>
-
+        
     <div class="h-100 w-100 d-flex justify-content-center align-items-center position-absolute z-n1" style="max-height: calc(100vh - 57px - 1rem); top: calc(57px + 0.5rem)">
         <img id="main-image" class="object-fit-contain mh-100" src="" style="max-width: 50%"/>
     </div>
