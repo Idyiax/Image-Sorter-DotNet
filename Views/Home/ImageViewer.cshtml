@@ -95,7 +95,7 @@
         <!-- Image Deleting -->
         <div class="p-2">
             <div class="d-flex align-items-center p-1 gap-1">
-                <input id="delete-image-button" type="button" value="Delete Image" />
+                <input id="delete-image-button" type="button" value="Delete Image"/>
             </div>
         </div>
     </div>
@@ -244,6 +244,10 @@
     async function AddTag() {
         const name = prompt('Add tag with the following name:');
 
+        if(name == null){
+            return;
+        }
+
         const findResponse = await fetch(`/api/tags/find?name=${name}`);
 
         var tag;
@@ -252,8 +256,9 @@
         if(findResponse.status == 404) {
             const createNewTag = confirm(`The tag "${name}" does not currently exist.\nWould you like to create it?`)
 
+            Debug.Log(createNewTag);
+
             if(createNewTag) {
-                console.log("Create new tag");
                 tag = await CreateTag(name)
                 console.log(tag);
             }
