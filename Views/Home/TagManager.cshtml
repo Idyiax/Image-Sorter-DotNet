@@ -46,10 +46,69 @@
             cursor: pointer;
         }
 
+    .tags-container {
+        min-height: 120px;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        overflow: hidden;
+    }
+
+    .tag-container {
+        padding: 4px 8px 4px 8px;
+        border-radius: 16px;
+        white-space: nowrap;
+        height: fit-content;
+        margin-bottom: 4px;
+        transition: filter 0.1s;
+        overflow: hidden;
+    }
+
+        .tag-container:hover {
+            filter: brightness(125%);
+            cursor: pointer;
+        }
+
+    .tag-text {
+        color: white;
+        font-weight: bold;
+        line-height: 1;
+        user-select: none;
+        margin: 0px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #delete-tag-button {
+        background-color: #cc0000;
+        color: #ff8888;
+        border-radius: 4px;
+        border-color: #aa0000;
+        opacity: 75%;
+        transition: filter 0.1s;
+    }
+
+        #delete-tag-button:hover {
+            filter: brightness(125%);
+            cursor: pointer;
+        }
+
+    h1 {
+        overflow: hidden;
+        word-wrap: break-word;
+    }
+
+    #tag-name {
+        max-width: calc(100% - 24px);
+    }
 </style>
 
 <div class="container w-100 h-100 mw-100 mh-100 p-0 d-inline-flex">
+    
+    <!-- Info Panel -->
     <div id="info-panel" class="container-fluid bg-colour-dark rounded-2 p-0 overflow-hidden" style="width: 20%; margin-right: 8px;">
+        
+        <!-- Info Panel Headers -->
         <div class="row mb-1">
             <div id="create-tag-button" class="mode-selector container-fluid col align-items-center justify-content-center" style="background-color: rgb(110, 110, 110);">
                 <p class="text-white" style="text-align: center;"> Create </p>
@@ -59,7 +118,10 @@
             </div>
         </div>
 
-        <div>
+        <!-- Info Section -->
+        <div class="container-fluid h-100 p-0">
+
+            <!-- Create Tag Menu -->
             <div id="create-tag-menu">
                 <div class="d-flex align-items-center p-1 gap-1">
                     <form id="uploadForm">
@@ -72,16 +134,56 @@
                 </div>
             </div>
 
-            <div id="edit-tag-menu" style="display: none">
-                <div id="edit-tag-menu-container" class="align-items-center p-1 gap-1" style="display: flex;">
-                    <h1 id="tag-name" class="text-white fw-bold"> Test! <!-- Image Name Inserted Here--> </h1>
-                    <div id="edit-tag-name">
-                        <svg width="16px" height="16px" style="fill: white;">
-                            <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
-                            <path d="M8.20624 4.96068L3.61005 9.55688L3.05003 12.357C2.98005 12.7068 3.28851 13.0153 3.63838 12.9453L6.43847 12.3853L11.0347 7.78911L8.20624 4.96068Z"></path>
-                        </svg>
+            <!-- Edit Tag Menu -->
+            <div id="edit-tag-menu" class="h-100" style="display: none">   
+                <div id="edit-tag-menu-container" class="h-100 align-items-center p-1 gap-1">
+                    
+                    <!-- Tag Name Display/Edit -->
+                    <div class="p-2">
+                        <div class="d-flex align-items-center p-1 gap-1">
+                            <h1 id="tag-name" class="text-white fw-bold"> <!-- Tag Name Inserted Here--> </h1>
+                            <div id="edit-tag-name">
+                                <svg width="16px" height="16px" style="fill: white;">
+                                    <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
+                                    <path d="M8.20624 4.96068L3.61005 9.55688L3.05003 12.357C2.98005 12.7068 3.28851 13.0153 3.63838 12.9453L6.43847 12.3853L11.0347 7.78911L8.20624 4.96068Z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parent Tag Management -->
+                    <div class="p-2">
+                        <div class="container-fluid pb-2 ps-0 overflow-hidden">
+                            <h1 class="text-white fw-bold"> Parent Tags </h1>
+                        </div>
+                        <div class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
+                            <div id="add-parent-button" class="tag-container bg-colour-light">
+                                <h1 class="tag-text">+</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Child Tag Management -->
+                    <div class="p-2">
+                        <div class="container-fluid pb-2 ps-0 overflow-hidden">
+                            <h1 class="text-white fw-bold"> Child Tags </h1>
+                        </div>
+                        <div class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
+                            <div id="add-child-button" class="tag-container bg-colour-light">
+                                <h1 class="tag-text">+</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Tag Button -->
+                    <div class="p-2">
+                        <div class="d-flex align-items-center p-1 gap-1">
+                            <input id="delete-tag-button" type="button" value="Delete Tag" />
+                        </div>
                     </div>
                 </div>
+
+                <!-- Unselected tag text -->
                 <div id="edit-tag-menu-unselected" class="justify-content-center align-items-center p-2" style="display: none;">
                     <h1 class="text-white fw-bold"> No tag selected. </h1>
                 </div>
@@ -90,6 +192,7 @@
     </div>
 
     <div id="graph" class="container-fluid h-100 justify-content-center align-items-center overflow-hidden rounded-2 p-0" style="max-height: calc(100vh - 57px - 1rem); top: calc(57px + 0.5rem)">
+        <!-- Tag graph is created here -->
     </div>
 </div>
 
@@ -201,7 +304,7 @@
             tagNameElement.innerHTML = tag.name;
 
             tagEditUnselected.style.display = "none";
-            tagEditContainer.style.display = "flex";
+            tagEditContainer.style.display = "inherit";
         }
 
         else {
@@ -280,7 +383,6 @@
             });
 
             if (response.ok) {
-                this.reset();
                 const newTag = await response.json();
 
                 let { nodes, links } = graph.graphData();
@@ -304,6 +406,45 @@
         catch (error) {
             console.error('Error:', error);
             alert('An error occurred while adding the tag. Please try again.');
+        }
+    });
+
+    // Delete tag
+    document.getElementById('delete-tag-button').addEventListener('click', async (event) => {
+        let confirmText = "Are you sure you want to delete this tag?\nAll relations involving this tag will also be deleted.\nThis cannot be undone.";
+
+        if (confirm(confirmText) == false) return;
+
+        try {
+            const response = await fetch(`/api/tags/${selectedTag.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (response.ok) {
+                const newTag = await response.json();
+
+                let { nodes, links } = graph.graphData();
+
+                nodes = nodes.filter((node) => node.name != newTag.tagName);
+
+                graph.graphData({ nodes, links });
+
+                selectedTag = null;
+                SetEditMode();
+            }
+            else {
+                console.log(response);
+                console.log(response.status);
+                alert('Delete failed. Please try again.');
+            }
+        }
+
+        catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the tag. Please try again.');
         }
     });
 </script>

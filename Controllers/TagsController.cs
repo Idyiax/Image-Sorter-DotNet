@@ -94,9 +94,15 @@ public class TagsController : ControllerBase
             return NotFound();
         }
 
+        var relations = _context.TagRelations.Where(tr => tr.ParentTagId == id || tr.ChildTagId == id);
+        var connections = _context.TagConnections.Where(tc => tc.TagId == id);
+
         try
         {
             _context.Tags.Remove(tag);
+            _context.TagRelations.RemoveRange(relations);
+            _context.TagConnections.RemoveRange(connections);
+
             await _context.SaveChangesAsync();
         }
         
