@@ -68,3 +68,45 @@ body {
 .text-colour {
     color: var(--text-colour);
 }
+
+.side-panel {
+    width: 20%;
+    height: 100%;
+    margin-right: 8px;
+    background-color: var(--bg-colour-dark);
+    border-radius: var(--bs-border-radius);
+    overflow: hidden;
+}
+
+.panel-container {
+    width: 100%;
+    height: fit-content;
+    padding: .5rem;
+    padding-bottom: 0;
+    gap: 0.25rem;
+}
+
+.delete-button {
+    background-color: #cc0000;
+    color: #ff8888;
+    border-color: #aa0000;
+    border-radius: 4px;
+    opacity: 75%;
+    transition: filter 0.1s;
+}
+    .delete-button:hover {
+        filter: brightness(125%);
+        cursor: pointer;
+    }
+
+.tag-container {
+
+}
+
+.tag-text-container {
+
+}
+
+.tag-text {
+
+}
