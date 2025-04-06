@@ -1,10 +1,10 @@
 ﻿<style>
     .previewImageContainer {
-        height: calc(100% - 64px);
+        height: 100%;
+        max-height: 100%;
         aspect-ratio: 0.7;
         background-color: var(--bg-colour-dark);
         border-radius: 32px;
-        margin: 20px;
     }
 
     .previewImage {
@@ -21,15 +21,24 @@
     }
 </style>
 
-<div class="container-fluid d-inline-flex align-items-center" style="height: calc(100vh - 57px)">
+<div class="container-fluid p-0 w-100 h-100 d-inline-flex align-items-center">
     <div class="container-fluid h-100 p-0">
-        <form id="uploadForm" enctype="multipart/form-data" asp-controller="Data" asp-action="AddImage">
-            <label for="file">Select Image</label><br>
-            <input type="file" id="file" name="file" accept="image/*"><br>
-            <label for="name">Image Name</label><br>
-            <input type="text" id="name" name="name"><br>
-            <input type="submit" value="Submit">
-        </form>
+        <div class="side-panel">
+            <form id="uploadForm" enctype="multipart/form-data" asp-controller="Data" asp-action="AddImage">
+                <div class="panel-container">
+                    <label for="name">Image Name</label><br>
+                    <input type="text" id="name" name="name"><br>
+                </div>
+                <div class="panel-container">
+                    <label for="file">Select Image</label><br>
+                    <input type="file" id="file" name="file" accept="image/*"><br>
+                </div>
+                <div class="panel-container">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+
     </div>
 
     <div class="previewImageContainer">
