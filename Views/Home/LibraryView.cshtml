@@ -49,22 +49,57 @@
         }
 
     .label-container{
-        padding-left: 4px;
+        padding-left: 1px;
+        overflow: hidden;
     }
 
     .label-container a {
-        color: rgb(180, 180, 180) !important;
+        color: var(--text-colour);
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: bold;
         text-decoration: none;
+        white-space: nowrap;
+        display: block;
+        transition: color 0.2s;
+    }
+
+        .label-container a:hover {
+            color: white;
+        }
+
+    .filter-menu {
+        position: fixed;
+        right: 0;
+        top: 57px;
+        height: 100%;
+        width: 20%;
+        background-color: var(--bg-colour-dark);
+    }
+
+    #filter-menu-left {
+        left: 0;
+    }
+
+    #filter-menu-right {
+        right: 0;
     }
 </style>
 
-<div class="container h-100 d-flex justify-content-center align-items-start overflow-hidden" style="max-height: calc(100vh - 57px)">
+<div class="h-100 d-flex justify-content-center overflow-hidden">
     <ul class="library-container">
         <!-- Images get inserted here on DOMContentLoaded -->
     </ul>
+</div>
+
+<div id="filter-menu-left" class="filter-menu">
+    <div class="panel-container"> 
+        <h1> Tag Filters </h1>
+    </div>
+</div>
+
+<div id="filter-menu-right" class="filter-menu">
+
 </div>
 
 <script>
