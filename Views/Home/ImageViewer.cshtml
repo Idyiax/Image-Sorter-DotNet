@@ -5,8 +5,8 @@
     }
 
     #edit-image-name {
-        width: 20px;
-        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
         border-radius: 10px;
         display: flex;
         background-color: var(--bg-colour-light);
@@ -57,8 +57,8 @@
 <div class="side-panel">
 
     <!-- Image Renaming -->
-    <div class="panel-container d-flex align-items-baseline">
-        <h1 id="image-name" class="text-white fw-bold" style="font-size: 24px"> <!-- Image Name Inserted Here--> </h1>
+    <div class="panel-container d-flex" style="align-items: last baseline">
+        <h1 id="image-name" class="panel-title-text"> <!-- Image Name Inserted Here--> </h1>
         <div id="edit-image-name">
             <svg width="16px" height="16px" style="fill: white;">
                 <path d="M9.97401 3.19292C10.3645 2.80239 10.9977 2.80239 11.3882 3.19292L12.8024 4.60713C13.193 4.99766 13.193 5.63082 12.8024 6.02134L11.7418 7.082L8.91335 4.25358L9.97401 3.19292Z"></path>
@@ -78,6 +78,7 @@
             </div>
         </div>
     </div>
+
     <!-- Image Deleting -->
     <div class="panel-container d-flex">
         <input class="delete-button" type="button" value="Delete Image" onclick="DeleteImage()"/>
