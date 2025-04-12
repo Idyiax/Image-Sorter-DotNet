@@ -252,11 +252,17 @@
             }
         }
 
-        else {
-            if(!findResponse.ok) {
+        if (!findResponse.ok) {
                 return;
-            }
-            tag = await findResponse.json();
+        }
+
+        tag = await findResponse.json();
+
+        const tagIndex = tags.findIndex((t) => t.tagName == tag.tagName);
+
+        if (tagIndex > -1) {
+            alert("This image already has this tag.");
+            return;
         }
 
         // Add the new tag
@@ -311,8 +317,6 @@
         });
 
         if (response.ok) {
-            console.log(response);
-
             tagVisuals.remove();
             const tagIndex = tags.indexOf(tag);
             if (tagIndex > -1) {

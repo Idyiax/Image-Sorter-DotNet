@@ -83,8 +83,7 @@
               "RelativeToolTip": "Controllers\\ImagesController.cs",
               "ViewState": "AgIAAGYAAAAAAAAAAAAswL0AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-06T09:58:53.167Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-06T09:58:53.167Z"
             },
             {
               "$type": "Document",
@@ -96,8 +95,7 @@
               "RelativeToolTip": "Controllers\\TagsController.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAgwFcAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-16T10:53:16.199Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-16T10:53:16.199Z"
             },
             {
               "$type": "Document",
@@ -121,8 +119,7 @@
               "RelativeToolTip": "Views\\Home\\AddImage.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-06T08:35:26.901Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-06T08:35:26.901Z"
             },
             {
               "$type": "Document",
@@ -132,7 +129,7 @@
               "RelativeDocumentMoniker": "Views\\Home\\ImageViewer.cshtml",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\Views\\Home\\ImageViewer.cshtml",
               "RelativeToolTip": "Views\\Home\\ImageViewer.cshtml",
-              "ViewState": "AgIAAGoAAAAAAAAAAAAgwDgBAAAaAAAAAAAAAA==",
+              "ViewState": "AgIAAPUAAAAAAAAAAAAgwP8AAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-03-07T11:06:39.336Z",
               "EditorCaption": ""
@@ -147,8 +144,7 @@
               "RelativeToolTip": "Views\\Home\\TagManager.cshtml",
               "ViewState": "AgIAAGQBAAAAAAAAAAAAACQAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-01T17:49:03.996Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-01T17:49:03.996Z"
             },
             {
               "$type": "Document",
@@ -160,8 +156,7 @@
               "RelativeToolTip": "Views\\Home\\LibraryView.cshtml",
               "ViewState": "AgIAAGYAAAAAAAAAAAAYwDUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-11T11:12:34.256Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-11T11:12:34.256Z"
             }
           ]
         }
