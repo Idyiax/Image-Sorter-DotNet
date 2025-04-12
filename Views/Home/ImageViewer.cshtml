@@ -225,6 +225,7 @@
         newTag.appendChild(tagText);
         tagsContainer.insertBefore(newTag, addTagButton);
 
+        newTag.addEventListener('click', (tag) => FilterByTag(tag));
         newTag.addEventListener('contextmenu', () => RemoveTag(tag, newTag));
     }
     async function AddTag() {
@@ -311,6 +312,7 @@
 
         return tag;
     }
+
     async function RemoveTag(tag, tagVisuals) {
         const response = await fetch(`/api/images/${id}/tags/${tag.id}`, {
             method: 'DELETE'
@@ -333,5 +335,8 @@
             console.log(response.status);
             console.error(`Tried deleting the tag ${tag} from the image with id ${id} but failed.`);
         }
+    }
+    async function FilterByTag(tag){
+
     }
 </script>

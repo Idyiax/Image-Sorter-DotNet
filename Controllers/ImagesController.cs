@@ -19,11 +19,39 @@ public class ImagesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Images>>> GetImages()
+    public async Task<ActionResult<IEnumerable<Images>>> GetImages([FromBody] Filters? filters)
     {
-        List<Images> images = await _context.Images.ToListAsync();
+        List<Images> images = new();
 
-        if (images == null || images.Count == 0)
+        if (filters == null)
+        {
+            images = await _context.Images.ToListAsync();
+        }
+
+        else
+        {
+            if (filters.tagFilters != null)
+            {
+                images = _context.Images.Where(i => i.TagConnections != null && i.TagConnections.Any(tc => filters.tagFilters.Contains(tc.TagId))).ToList();
+            }
+
+            if (filters.sortingMode != null && images.Count != 0)
+            {
+                switch (filters.sortingMode)
+                {
+                    case "Alphabetical":
+                        images = images.OrderBy(i => i.FileName).ToList();
+                        break;
+                    case "Created":
+                        images = images.OrderBy(i => i.CreatedDate).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        if (images.Count == 0)
         {
             return NoContent();
         }
@@ -33,6 +61,8 @@ public class ImagesController : ControllerBase
             return Ok(images);
         }
     }
+
+    public record Filters(int[]? tagFilters, string? sortingMode);
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetImage(int id)
