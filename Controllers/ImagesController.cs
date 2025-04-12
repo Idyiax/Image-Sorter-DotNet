@@ -164,8 +164,8 @@ public class ImagesController : ControllerBase
         }
     }
 
-    [HttpPost("{id}/tags")]
-    public async Task<IActionResult> AddTag(int id, [FromBody] int tagId)
+    [HttpPost("{id}/tags/{tagId}")]
+    public async Task<IActionResult> AddTag(int id, int tagId)
     {
         var connection = new TagConnections
         {
@@ -177,5 +177,21 @@ public class ImagesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(connection);
+    }
+
+    [HttpDelete("{id}/tags/{tagId}")]
+    public async Task<IActionResult> RemoveTag(int id, int tagId)
+    {
+        TagConnections? connection = await _context.TagConnections.FirstOrDefaultAsync((c) => c.TagId == tagId);
+
+        if (connection == null)
+        {
+            return NotFound();
+        }
+
+        _context.TagConnections.Remove(connection);
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 }

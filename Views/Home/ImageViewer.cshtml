@@ -217,12 +217,15 @@
 
         newTag.className = 'tag-container';
         newTag.style.backgroundColor = tag.colourHex;
+        newTag.oncontextmenu = () => { return false };
 
         tagText.className = 'tag-text';
         tagText.textContent = tag.tagName;
 
         newTag.appendChild(tagText);
         tagsContainer.insertBefore(newTag, addTagButton);
+
+        newTag.addEventListener('contextmenu', () => RemoveTag(tag, newTag));
     }
     async function AddTag() {
         const name = prompt('Add tag with the following name:');
@@ -238,8 +241,6 @@
         // If tag can't be found, prompt to create it and then add it.
         if(findResponse.status == 404) {
             const createNewTag = confirm(`The tag "${name}" does not currently exist.\nWould you like to create it?`)
-
-            Debug.Log(createNewTag);
 
             if(createNewTag) {
                 tag = await CreateTag(name)
@@ -259,12 +260,8 @@
         }
 
         // Add the new tag
-        const addResponse = await fetch(`/api/images/${id}/tags`, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(tag.id)
+        const addResponse = await fetch(`/api/images/${id}/tags/${tag.id}`, {
+            method: 'POST'
         });
 
         if(!addResponse.ok) {
@@ -307,5 +304,30 @@
         const tag = await response.json()
 
         return tag;
+    }
+    async function RemoveTag(tag, tagVisuals) {
+        const response = await fetch(`/api/images/${id}/tags/${tag.id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            console.log(response);
+
+            tagVisuals.remove();
+            const tagIndex = tags.indexOf(tag);
+            if (tagIndex > -1) {
+                tags.splice(tagIndex, 1);
+            }
+        }
+
+        else if (response.status == 404) {
+            console.log("Tag not to delete not found.");
+        }
+        
+        else {
+            console.log(response);
+            console.log(response.status);
+            console.error(`Tried deleting the tag ${tag} from the image with id ${id} but failed.`);
+        }
     }
 </script>
