@@ -8,7 +8,7 @@
         --entry-margin: 16px;
     }
 
-    .library-container {
+    #library-container {
         display: flex;
         padding: 0px;
         flex-wrap: wrap;
@@ -87,33 +87,66 @@
 </style>
 
 <div class="h-100 d-flex justify-content-center overflow-hidden">
-    <ul class="library-container">
+    <ul id="library-container">
         <!-- Images get inserted here on DOMContentLoaded -->
     </ul>
 </div>
 
 <div id="filter-menu-left" class="filter-menu">
     <div class="panel-container"> 
-        <h1> Tag Filters </h1>
+        <h1 class="panel-title-text">Sorting and Filtering</h1>
+    </div>
+
+    <!--- Tag Filters -->
+    <div class="panel-container">
+        <div class="container-fluid p-2 pt-0 overflow-hidden">
+            <h1> Tag Filters </h1>
+        </div>
+        <div id="filter-container" class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
+            <div id="add-filter-button" class="tag-container bg-colour-light">
+                <h1 class="tag-text">+</h1>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- 
 <div id="filter-menu-right" class="filter-menu">
-
+    
 </div>
+-->
 
 <script>
-    document.addEventListener('DOMContentLoaded', loadImages);
+    var tagFilters = [];
+    var sortingMode = "Alphabetical";
 
-    async function loadImages() {
+    document.addEventListener('DOMContentLoaded', LoadImages);
+
+    const filterContainer = document.getElementById('filter-container');
+    const addFilterButton = document.getElementById('add-filter-button');
+    const libraryContainer = document.getElementById('library-container');
+    
+    addFilterButton.addEventListener('click', AddFilter);
+    
+    async function LoadImages() {
         try {
-            const response = await fetch('/api/images', {
-                method: 'GET'
-            });
+            console.log("Loading Images");
+
+            libraryContainer.innerHTML = '';
+
+            const query = new URLSearchParams();
+
+            console.log(tagFilters);
+            console.log(tagFilters.map(filter => filter.id));
+
+            if(sortingMode != null) query.set('sortingMode', sortingMode);
+            if(tagFilters.length > 0) query.set('tagFilters', tagFilters.map(filter => filter.id).join(','));
+
+            console.log(`/api/images?${query.toString()}`);
+            
+            const response = await fetch(`/api/images?${query.toString()}`);
 
             const images = await response.json();
-            
-            const libraryContainer = document.querySelector('.library-container');
 
             images.forEach(image => {
                 const entryContainer = document.createElement('li');
@@ -130,10 +163,76 @@
 
                 libraryContainer.appendChild(entryContainer);
             });
-        } 
-        
+        }
+
         catch (error) {
             console.error('Error loading images:', error);
         }
-    }  
+    }
+    async function AddFilter() {
+        const name = prompt('Add filter with the following name:');
+
+        if(name == null) {
+            return;
+        }
+
+        const response = await fetch(`/api/tags/find?name=${name}`);
+
+        var filter;
+
+        if(response.status == 404) {
+            const tryAgain = confirm(`The tag "${name}" does not currently exist.\nWould you like enter a different tag?`)
+
+            if(tryAgain) {
+                AddFilter();
+            }
+
+            return;
+        }
+
+        if (!response.ok) {
+            return;
+        }
+
+        filter = await response.json();
+
+        // Don't add the filter if it's already been added.
+        const tagIndex = tagFilters.findIndex((t) => t.id == filter.id);
+
+        if (tagIndex > -1) {
+            return;
+        }
+
+        tagFilters.push(filter);
+        DisplayFilter(filter);
+
+        LoadImages();
+    }
+    async function RemoveFilter(filter, filterVisuals) {
+        filterVisuals.remove();
+
+        const filterIndex = tagFilters.indexOf(filter);
+
+        if (filterIndex > -1) {
+            tagFilters.splice(filterIndex, 1);
+            LoadImages();
+        }      
+    }
+    async function DisplayFilter(filter) {
+        const newFilter = document.createElement('div');
+        const filterText = document.createElement('h1');
+
+        newFilter.className = 'tag-container';
+        newFilter.style.backgroundColor = filter.colourHex;
+        newFilter.oncontextmenu = () => { return false };
+
+        filterText.className = 'tag-text';
+        filterText.textContent = filter.tagName;
+
+        newFilter.appendChild(filterText);
+        filterContainer.insertBefore(newFilter, addFilterButton);
+
+        newFilter.addEventListener('click', (filter) => FilterByTag(filter));
+        newFilter.addEventListener('contextmenu', () => RemoveFilter(filter, newFilter));
+    }
 </script>

@@ -86,10 +86,18 @@ body {
     gap: 0.5rem;
 }
 
-.panel-title-text {
-    font-size: 24px;
+h1 {
     font-weight: bold;
     color: white;
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+.panel-title-text {
+    font-size: 24px;
 }
 
 .delete-button {
@@ -105,14 +113,36 @@ body {
         cursor: pointer;
     }
 
+.tags-container {
+    min-height: 120px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    overflow: hidden;
+}
+
 .tag-container {
-
+    padding: 4px 8px 4px 8px;
+    border-radius: 16px;
+    white-space: nowrap;
+    height: fit-content;
+    width: fit-content;
+    margin-bottom: 4px;
+    transition: filter 0.1s;
+    overflow: hidden;
 }
 
-.tag-text-container {
-
-}
+    .tag-container:hover {
+        filter: brightness(125%);
+        cursor: pointer;
+    }
 
 .tag-text {
-
+    color: white;
+    font-weight: bold;
+    line-height: 1;
+    user-select: none;
+    margin: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

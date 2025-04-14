@@ -1,9 +1,4 @@
 ﻿<style>
-    h1 {
-        font-size: 16px;
-        margin-bottom: 0;
-    }
-
     #edit-image-name {
         min-width: 20px;
         min-height: 20px;
@@ -18,39 +13,7 @@
         #edit-image-name:hover {
             opacity: 0.5;
             cursor: pointer;
-        }
-
-    #tags-container {
-        min-height: 120px;
-        display: flex;
-        flex-wrap: wrap;
-        align-content: flex-start;
-        overflow: hidden;
-    }
-
-    .tag-container {
-        padding: 4px 8px 4px 8px;
-        border-radius: 16px;
-        white-space: nowrap;
-        height: fit-content;
-        margin-bottom: 4px;
-        transition: filter 0.1s;
-        overflow: hidden;
-    }
-        .tag-container:hover {
-            filter: brightness(125%);
-            cursor: pointer;
-        }
-
-    .tag-text {
-        color: white;
-        font-weight: bold;
-        line-height: 1;
-        user-select: none;
-        margin: 0px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+        } 
 </style>
 
 <!-- Info Panel -->
@@ -70,9 +33,9 @@
     <!-- Tag Management -->
     <div class="panel-container">
         <div class="container-fluid p-2 pt-0 overflow-hidden">
-            <h1 class="text-white fw-bold"> Tags </h1>
+            <h1> Tags </h1>
         </div>
-        <div id="tags-container" class="container-fluid rounded bg-colour-darker p-2 gap-1">
+        <div id="tags-container" class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
             <div id="add-tag-button" class="tag-container bg-colour-light">
                 <h1 class="tag-text">+</h1>
             </div>

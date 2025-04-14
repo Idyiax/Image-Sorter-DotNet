@@ -19,35 +19,34 @@ public class ImagesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Images>>> GetImages([FromBody] Filters? filters)
+    public async Task<ActionResult<IEnumerable<Images>>> GetImages([FromQuery] string? sortingMode, [FromQuery] string? tagFilters)
     {
         List<Images> images = new();
 
-        if (filters == null)
+        int[]? filters = filters = tagFilters?.Split(',').Select(int.Parse).ToArray();
+
+        if (filters == null || filters.Length == 0)
         {
             images = await _context.Images.ToListAsync();
         }
 
         else
         {
-            if (filters.tagFilters != null)
-            {
-                images = _context.Images.Where(i => i.TagConnections != null && i.TagConnections.Any(tc => filters.tagFilters.Contains(tc.TagId))).ToList();
-            }
+            images = await _context.Images.Where(i => i.TagConnections != null && i.TagConnections.Any(tc => filters.Contains(tc.TagId))).ToListAsync();
+        }
 
-            if (filters.sortingMode != null && images.Count != 0)
+        if (sortingMode != null && images.Count != 0)
+        {
+            switch (sortingMode)
             {
-                switch (filters.sortingMode)
-                {
-                    case "Alphabetical":
-                        images = images.OrderBy(i => i.FileName).ToList();
-                        break;
-                    case "Created":
-                        images = images.OrderBy(i => i.CreatedDate).ToList();
-                        break;
-                    default:
-                        break;
-                }
+                case "Alphabetical":
+                    images = images.OrderBy(i => i.FileName).ToList();
+                    break;
+                case "Created":
+                    images = images.OrderBy(i => i.CreatedDate).ToList();
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -61,8 +60,6 @@ public class ImagesController : ControllerBase
             return Ok(images);
         }
     }
-
-    public record Filters(int[]? tagFilters, string? sortingMode);
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetImage(int id)
