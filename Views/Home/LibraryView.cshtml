@@ -8,6 +8,10 @@
         --entry-margin: 16px;
     }
 
+    label {
+        color: white;
+    }
+
     #library-container {
         display: flex;
         padding: 0px;
@@ -97,7 +101,24 @@
         <h1 class="panel-title-text">Sorting and Filtering</h1>
     </div>
 
+    <!-- Image Sorting -->
+    <div class="panel-container d-inline-flex gap-1">
+        <label for="sorting-mode"> Sort mode </label>
+        <select name="sorting-mode" id="sorting-mode">
+            <option value="alphabetical"> Alphabetical </option>
+            <option value="date-created"> Creation date </option>
+        </select>
+    </div>
+
     <!--- Tag Filters -->
+    <div class="panel-container d-inline-flex gap-1">
+        <label for="filter-mode"> Display tags with </label>
+        <select name="filter-mode" id="filter-mode">
+            <option value="all"> all filter tags. </option>
+            <option value="any"> any filter tags. </option>
+        </select>
+    </div>
+
     <div class="panel-container">
         <div class="container-fluid p-2 pt-0 overflow-hidden">
             <h1> Tag Filters </h1>
@@ -118,32 +139,35 @@
 
 <script>
     var tagFilters = [];
-    var sortingMode = "Alphabetical";
+    var sortingMode = "alphabetical";
+    var filterMode = "all"
 
     document.addEventListener('DOMContentLoaded', LoadImages);
 
     const filterContainer = document.getElementById('filter-container');
     const addFilterButton = document.getElementById('add-filter-button');
     const libraryContainer = document.getElementById('library-container');
+    const selectSortingMode = document.getElementById('sorting-mode');
+    const selectFilterMode = document.getElementById('filter-mode');
+
     
     addFilterButton.addEventListener('click', AddFilter);
+
+    selectSortingMode.addEventListener('change', () => SetSortingMode(selectSortingMode.value));
+    selectFilterMode.addEventListener('change', () => SetFilterMode(selectFilterMode.value));
     
     async function LoadImages() {
         try {
-            console.log("Loading Images");
-
             libraryContainer.innerHTML = '';
 
             const query = new URLSearchParams();
 
-            console.log(tagFilters);
-            console.log(tagFilters.map(filter => filter.id));
-
             if(sortingMode != null) query.set('sortingMode', sortingMode);
+            if(filterMode != null) query.set('filterMode', filterMode);
             if(tagFilters.length > 0) query.set('tagFilters', tagFilters.map(filter => filter.id).join(','));
 
             console.log(`/api/images?${query.toString()}`);
-            
+
             const response = await fetch(`/api/images?${query.toString()}`);
 
             const images = await response.json();
@@ -234,5 +258,18 @@
 
         newFilter.addEventListener('click', (filter) => FilterByTag(filter));
         newFilter.addEventListener('contextmenu', () => RemoveFilter(filter, newFilter));
+    }
+    async function SetSortingMode(mode) {
+        console.log(mode);
+        if(mode == sortingMode) return;
+
+        sortingMode = mode;
+        LoadImages();
+    }
+    async function SetFilterMode(mode) {
+        if(mode == filterMode) return;
+
+        filterMode = mode;
+        LoadImages();
     }
 </script>

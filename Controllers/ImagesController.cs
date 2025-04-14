@@ -19,7 +19,7 @@ public class ImagesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Images>>> GetImages([FromQuery] string? sortingMode, [FromQuery] string? tagFilters)
+    public async Task<ActionResult<IEnumerable<Images>>> GetImages([FromQuery] string? sortingMode, [FromQuery] string? tagFilters, [FromQuery] string? filterMode)
     {
         List<Images> images = new();
 
@@ -32,17 +32,32 @@ public class ImagesController : ControllerBase
 
         else
         {
-            images = await _context.Images.Where(i => i.TagConnections != null && i.TagConnections.Any(tc => filters.Contains(tc.TagId))).ToListAsync();
+            if (filterMode == null || filterMode == "all")
+            {
+                images = await _context.Images
+                    .Where(i => i.TagConnections != null
+                    && i.TagConnections.Count > 0
+                    && filters.All(filter => i.TagConnections.Any(tc => tc.TagId == filter))) 
+                    .ToListAsync();
+
+            }
+
+            else
+            {
+                images = await _context.Images.Where(i => i.TagConnections != null && i.TagConnections.Count > 0 && i.TagConnections.Any(tc => filters.Contains(tc.TagId))).ToListAsync();
+            }
         }
 
         if (sortingMode != null && images.Count != 0)
         {
+            sortingMode = sortingMode.ToLower();
+
             switch (sortingMode)
             {
-                case "Alphabetical":
+                case "alphabetical":
                     images = images.OrderBy(i => i.FileName).ToList();
                     break;
-                case "Created":
+                case "date-created":
                     images = images.OrderBy(i => i.CreatedDate).ToList();
                     break;
                 default:
