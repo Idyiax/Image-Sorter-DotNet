@@ -138,9 +138,9 @@
 -->
 
 <script>
-    var tagFilters = [];
-    var sortingMode = "alphabetical";
-    var filterMode = "all"
+    var tagFilters;
+    var sortingMode;
+    var filterMode;
 
     document.addEventListener('DOMContentLoaded', LoadImages);
 
@@ -162,8 +162,12 @@
 
             const query = new URLSearchParams();
 
-            if(sortingMode != null) query.set('sortingMode', sortingMode);
-            if(filterMode != null) query.set('filterMode', filterMode);
+            if(sortingMode == null) sortingMode = 'alphabetical';
+            if(filterMode == null) filterMode = 'all';
+            if(tagFilters == null) tagFilters = [];
+
+            query.set('sortingMode', sortingMode);
+            query.set('filterMode', filterMode);
             if(tagFilters.length > 0) query.set('tagFilters', tagFilters.map(filter => filter.id).join(','));
 
             console.log(`/api/images?${query.toString()}`);
