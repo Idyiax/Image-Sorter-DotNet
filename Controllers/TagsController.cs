@@ -4,6 +4,8 @@ using Image_Sorter_DotNet.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
+using System.Threading.Tasks;
+using Azure;
 
 namespace Image_Sorter_DotNet.Controllers;
 
@@ -44,9 +46,37 @@ public class TagsController : ControllerBase
             return BadRequest($"Could not add the tag: {e.Message}");
         }
     }
+    public record TagsAddRequest(string name, string colourHex);
+
+    [HttpPost("{id}/children/{childId}")]
+    public async Task<IActionResult> AddChild(int id, int childId)
+    {
+        if (id == childId) return BadRequest($"Parent and child tag both have ID {id}. Tags cannot be children of themselves.");
+
+        if (await GetTag(id) is not OkObjectResult) return NotFound($"Parent tag with ID {id} not found");
+        if (await GetTag(childId) is not OkObjectResult) return NotFound($"Child tag with ID {childId} not found");
+
+        if (await GetChildren(id) is not OkObjectResult okResult || 
+            okResult.Value is not List<Tags?> children ||
+            children.Any(c => c?.Id == childId))
+        {
+            return BadRequest($"The tag with ID {id} already contains the tag with ID {childId} as a child.");
+        }
+
+        TagRelations relation = new TagRelations 
+        { 
+            ParentTagId = id,
+            ChildTagId = childId
+        };
+
+        await _context.TagRelations.AddAsync(relation);
+        await _context.SaveChangesAsync();
+
+        return Ok(relation);
+    }
 
     [HttpGet]
-    public async Task<ActionResult<Tags>> GetAllTags()
+    public async Task<IActionResult> GetAllTags()
     {
         List<Tags> tags = await _context.Tags.ToListAsync();
 
@@ -59,20 +89,17 @@ public class TagsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Tags>> GetTag(int id)
+    public async Task<IActionResult> GetTag(int id)
     {
         var tag = await _context.Tags.FindAsync(id);
 
-        if (tag == null)
-        {
-            return NotFound();
-        }
+        if (tag == null) return NotFound();
 
         return Ok(tag);
     }
 
     [HttpGet("find")]
-    public async Task<ActionResult<Tags>> FindTag([FromQuery] string name)
+    public async Task<IActionResult> FindTag([FromQuery] string name)
     {
         Tags? tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == name);
 
@@ -82,6 +109,21 @@ public class TagsController : ControllerBase
         }
 
         return Ok(tag);
+    }
+
+    [HttpGet("{id}/children")]
+    public async Task<IActionResult> GetChildren(int id)
+    {
+        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+
+        List<Tags?> children = _context.TagRelations.Where(tr => tr.ParentTagId == id).Select(tr => tr.ChildTag).ToList();
+
+        if (children.Count == 0 || children.All(c => c == null))
+        {
+            return NotFound();
+        }
+
+        return Ok(children);
     }
 
     [HttpDelete("{id}")]
@@ -113,6 +155,23 @@ public class TagsController : ControllerBase
 
         return Ok(tag);
     }
+
+    [HttpDelete("{id}/children/{childId}")]
+    public async Task<ActionResult<Tags>> DeleteChild(int id, int childId)
+    {
+        if (await GetTag(id) is not OkObjectResult) return NotFound($"Parent tag with ID {id} not found");
+        if (await GetTag(childId) is not OkObjectResult) return NotFound($"Child tag with ID {childId} not found");
+
+        TagRelations? relation = await _context.TagRelations.FirstOrDefaultAsync(tr => tr.ParentTagId == id && tr.ChildTagId == childId);
+
+        if (relation == null) return NotFound($"Could not find a relationship between the parent tag with ID {id} and child tag with ID {childId}");
+        
+        _context.TagRelations.Remove(relation);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
 
     [HttpPatch("{id}")]
     public async Task<ActionResult<Tags>> PatchTag(int id, [FromBody] JsonPatchDocument<Tags> patchDoc)
@@ -170,6 +229,4 @@ public class TagsController : ControllerBase
 
         return Ok(json);
     }
-
-    public record TagsAddRequest(string name, string colourHex);
 }

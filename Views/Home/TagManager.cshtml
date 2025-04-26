@@ -167,8 +167,6 @@
         }
   
     });
-
-    
     
     const createTagButton = document.getElementById('create-tag-button');
     const editTagButton = document.getElementById('edit-tag-button')
@@ -392,15 +390,38 @@
         }
     }
     async function AddParentTagPrompt() {
+        const parentName = prompt("Enter the name of the tag to add as a parent.");
+        if(parentName == undefined) return;
 
+        const response = await fetch(`api/tags/find?${parentName}`);
+
+        if(response.ok){
+            const parentTag = await respon.json();
+            await AddParentTag(selectedTag, parentTag);
+        }
     }
     async function AddChildTagPrompt() {
+        const childName = prompt("Enter the name of the tag to add as a child.");
+        if(childName == undefined) return;
 
+        const response = await fetch(`api/tags/find?${childName}`);
+
+        if(response.ok){
+            const childTag = await respon.json();
+            await AddParentTag(childTag, selectedTag);
+        }
     }
     async function AddParentTag(tag, parentTag) {
+        const response = await fetch(`/api/tags/${parentTag.id}/children/${tag.id}`, {
+            method: 'POST'
+        });
 
-    }
-    async function AddChildTag(tag, childTag) {
+        if(response.ok){
+            
+        }
 
+        else {
+            console.error("There was an error when adding a tag relation.");
+        }
     }
 </script>
