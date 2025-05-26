@@ -193,6 +193,8 @@
         const response = await fetch('/api/tags/manager-data');
         const tagData = await response.json();
 
+        console.log(tagData);
+
         let width = graphContainer.clientWidth;
         let height = graphContainer.clientHeight
 
@@ -412,6 +414,7 @@
         }
     }
     async function AddParentTag(tag, parentTag) {
+        /*
         const response = await fetch(`/api/tags/${parentTag.id}/children/${tag.id}`, {
             method: 'POST'
         });
@@ -423,5 +426,6 @@
         else {
             console.error("There was an error when adding a tag relation.");
         }
+        */
     }
 </script>

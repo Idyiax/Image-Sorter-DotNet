@@ -56,12 +56,16 @@ public class TagsController : ControllerBase
         if (await GetTag(id) is not OkObjectResult) return NotFound($"Parent tag with ID {id} not found");
         if (await GetTag(childId) is not OkObjectResult) return NotFound($"Child tag with ID {childId} not found");
 
-        if (await GetChildren(id) is not OkObjectResult okResult || 
-            okResult.Value is not List<Tags?> children ||
+        if (await GetChildren(id) is OkObjectResult okResult &&
+            okResult.Value is List<Tags?> children &&
             children.Any(c => c?.Id == childId))
         {
             return BadRequest($"The tag with ID {id} already contains the tag with ID {childId} as a child.");
         }
+
+        // Maybe add a check here to avoid cyclcle loops. For example: A -> B -> C -> A.
+        // In this case, you wouldn't be allowed to make tag A a child of tag C because
+        // tag C already inherits from A.
 
         TagRelations relation = new TagRelations 
         { 
@@ -214,8 +218,8 @@ public class TagsController : ControllerBase
         {
             links.Add(new
             {
-                source = relation.ParentTag,
-                target = relation.ChildTag
+                source = relation.ParentTagId,
+                target = relation.ChildTagId
             });
         });
 
