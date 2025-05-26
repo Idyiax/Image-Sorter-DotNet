@@ -193,8 +193,6 @@
         const response = await fetch('/api/tags/manager-data');
         const tagData = await response.json();
 
-        console.log(tagData);
-
         let width = graphContainer.clientWidth;
         let height = graphContainer.clientHeight
 
@@ -403,29 +401,36 @@
         }
     }
     async function AddChildTagPrompt() {
-        const childName = prompt("Enter the name of the tag to add as a child.");
-        if(childName == undefined) return;
 
-        const response = await fetch(`api/tags/find?${childName}`);
+        const childName = prompt('Enter the name of the tag to add as a child:');
+
+        if(childName == null){
+            return;
+        }
+
+        const response = await fetch(`/api/tags/find?name=${childName}`);
 
         if(response.ok){
-            const childTag = await respon.json();
-            await AddParentTag(childTag, selectedTag);
+            const childTag = await response.json();
+            await AddChildTag(selectedTag.id, childTag.id);
+        }
+
+        else{
+            alert(`Could not find the tag with the name ${childName}`);
+            console.warn(response);
         }
     }
-    async function AddParentTag(tag, parentTag) {
-        /*
-        const response = await fetch(`/api/tags/${parentTag.id}/children/${tag.id}`, {
+    async function AddChildTag(tagId, childTagId) {
+        const response = await fetch(`/api/tags/${tagId}/children/${childTagId}`, {
             method: 'POST'
         });
 
         if(response.ok){
-            
+            console.log("Added child tag successfully");
         }
 
         else {
             console.error("There was an error when adding a tag relation.");
         }
-        */
     }
 </script>
