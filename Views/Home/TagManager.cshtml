@@ -1,4 +1,5 @@
-﻿<script src="//cdn.jsdelivr.net/npm/force-graph"></script>
+﻿<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/force-graph"></script>
 
 <style>
     h1 {
@@ -231,7 +232,8 @@
             .onNodeClick((node, event) => {
                 selectedTag = node;
                 SetEditMode(node);
-            });
+            })
+            .d3Force('link').distance(100);
     }
     async function CreateTagPrompt(formEvent) {
         formEvent?.preventDefault();
