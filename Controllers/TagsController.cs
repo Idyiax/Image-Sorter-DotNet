@@ -124,10 +124,25 @@ public class TagsController : ControllerBase
 
         if (children.Count == 0 || children.All(c => c == null))
         {
-            return NotFound();
+            return NoContent();
         }
 
         return Ok(children);
+    }
+
+    [HttpGet("{id}/parents")]
+    public async Task<IActionResult> GetParents(int id)
+    {
+        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+
+        List<Tags?> parents = _context.TagRelations.Where(tr => tr.ChildTagId == id).Select(tr => tr.ParentTag).ToList();
+
+        if (parents.Count == 0 || parents.All(p => p == null))
+        {
+            return NoContent();
+        }
+
+        return Ok(parents);
     }
 
     [HttpDelete("{id}")]

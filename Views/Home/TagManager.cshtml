@@ -104,8 +104,8 @@
                         <div class="container-fluid pb-2 ps-0 overflow-hidden">
                             <h1> Parent Tags </h1>
                         </div>
-                        <div class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
-                            <div id="add-parent-button" class="tag-container bg-colour-light">
+                        <div id="parent-tags-container" class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
+                            <div id="add-parent-button" class="add-tag-button tag-container bg-colour-light">
                                 <h1 class="tag-text">+</h1>
                             </div>
                         </div>
@@ -116,8 +116,8 @@
                         <div class="container-fluid pb-2 ps-0 overflow-hidden">
                             <h1> Child Tags </h1>
                         </div>
-                        <div class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
-                            <div id="add-child-button" class="tag-container bg-colour-light">
+                        <div id="child-tags-container" class="tags-container container-fluid rounded bg-colour-darker p-2 gap-1">
+                            <div id="add-child-button" class="add-tag-button tag-container bg-colour-light">
                                 <h1 class="tag-text">+</h1>
                             </div>
                         </div>
@@ -176,6 +176,9 @@
     const tagNameElement = document.getElementById('tag-name');
     const tagEditContainer = document.getElementById('edit-tag-menu-container');
     const tagEditUnselected = document.getElementById('edit-tag-menu-unselected');
+
+    const parentContainer = document.getElementById('parent-tags-container');
+    const childContainer = document.getElementById('child-tags-container');
 
     createTagButton.addEventListener('click', SetCreateMode);
     editTagButton.addEventListener('click', () => SetEditMode(selectedTag));
@@ -380,6 +383,11 @@
         if(tag) {
             tagNameElement.innerHTML = tag.name;
 
+            ClearParentTags();
+            ClearChildTags();
+            LoadParentTags();
+            LoadChildTags();
+
             tagEditUnselected.style.display = "none";
             tagEditContainer.style.display = "inherit";
         }
@@ -388,6 +396,78 @@
             tagEditContainer.style.display = "none";
             tagEditUnselected.style.display = "flex";
         }
+    }
+    async function ClearParentTags() {
+        let parentTags = parentContainer.getElementsByClassName('tag');
+        while (parentTags.length > 0) {
+            parentTags[0].parentNode.removeChild(parentTags[0]);
+        }
+    }
+    async function ClearChildTags() {
+        let childTags = childContainer.getElementsByClassName('tag');
+        while (childTags.length > 0) {
+            childTags[0].parentNode.removeChild(childTags[0]);
+        }    
+    }
+    async function LoadParentTags () {
+        const response = await fetch(`/api/tags/${selectedTag.id}/parents`)
+
+        if(response.status == 200) {
+            const parents = await response.json();
+
+            console.log(parents);
+            parents.forEach((parent) => {
+                DisplayTag(parent, parentContainer);
+            });
+        }
+
+        else if(response.status == 204){
+            //console.log(`The tag ${selectedTag.name} has no parents (tag id: ${selectedTag.id})`)
+        }
+
+        else{
+            return console.error(`Could not load parents for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
+        }
+    }
+    async function LoadChildTags () {
+        const response = await fetch(`/api/tags/${selectedTag.id}/children`)
+
+        if(response.status == 200) {
+            const children = await response.json();
+
+            console.log(children);
+
+            children.forEach((child) => {
+                DisplayTag(child, childContainer);
+            });
+        }
+
+        else if(response.status == 204){
+            //console.log(`The tag ${selectedTag.name} has no children (tag id: ${selectedTag.id})`)
+        }
+
+        else{
+            return console.error(`Could not load children for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
+        }
+    }
+    async function DisplayTag(tag, tagContainer) {
+        const newTag = document.createElement('div');
+        const tagText = document.createElement('h1');
+
+        newTag.classList.add('tag', 'tag-container');
+        newTag.style.backgroundColor = tag.colourHex;
+        newTag.oncontextmenu = () => { return false };
+
+        tagText.className = 'tag-text';
+        tagText.textContent = tag.tagName;
+
+        const addTagButton = tagContainer.querySelector('.add-tag-button');
+
+        newTag.appendChild(tagText);
+        tagContainer.insertBefore(newTag, addTagButton);
+
+        newTag.addEventListener('click', (tag) => console.log("Tag clicked"));
+        newTag.addEventListener('contextmenu', () => console.log("Tag right-clicked"));
     }
     async function AddParentTagPrompt() {
         const parentName = prompt("Enter the name of the tag to add as a parent.");
@@ -401,7 +481,6 @@
         }
     }
     async function AddChildTagPrompt() {
-
         const childName = prompt('Enter the name of the tag to add as a child:');
 
         if(childName == null){
