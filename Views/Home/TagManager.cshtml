@@ -475,7 +475,7 @@
         const parentName = prompt("Enter the name of the tag to add as a parent.");
         if(parentName == undefined) return;
 
-        const response = await fetch(`api/tags/find?${parentName}`);
+        const response = await fetch(`api/tags/find?name=${parentName}`);
 
         if(response.ok){
             const parentTag = await respon.json();
@@ -507,7 +507,14 @@
         });
 
         if(response.ok){
-            console.log("Added child tag successfully");
+            let { nodes, links } = graph.graphData();
+
+            links.push({
+                source: tagId,
+                target: childTagId,
+            });
+
+            graph.graphData({ nodes, links });
         }
 
         else {

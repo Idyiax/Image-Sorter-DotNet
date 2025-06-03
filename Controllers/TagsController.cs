@@ -130,6 +130,48 @@ public class TagsController : ControllerBase
         return Ok(children);
     }
 
+    [HttpGet("{id}/children/all")]
+    public async Task<IActionResult> GetAllChildren(int id)
+    {
+        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+
+        var getChildren = await GetChildren(id);
+        if (getChildren is not OkObjectResult) return BadRequest();
+
+        List<Tags?>? childrenToCheck = (getChildren as OkObjectResult)?.Value as List<Tags?>;
+        List<Tags?> checkedChildren = new();
+
+        if (childrenToCheck == null || childrenToCheck.Count == 0 || childrenToCheck.All(p => p == null))
+        {
+            return NoContent();
+        }
+
+        while (childrenToCheck.Count > 0)
+        {
+            Tags? currentChild = childrenToCheck.First();
+
+            if (currentChild != null)
+            {
+                getChildren = await GetChildren(currentChild.Id);
+                if (getChildren is OkObjectResult)
+                {
+                    List<Tags?>? checkedChild = (getChildren as OkObjectResult)?.Value as List<Tags?>;
+
+                    if (checkedChild != null && checkedChild.Count > 0)
+                    {
+                        checkedChild.ForEach((tag) => childrenToCheck.Add(tag));
+                    }
+                }
+            }
+
+            checkedChildren.Add(currentChild);
+            childrenToCheck.Remove(currentChild);
+        }
+
+        Console.WriteLine($"There are {checkedChildren.Count} parents in total.");
+        return Ok(checkedChildren);
+    }
+
     [HttpGet("{id}/parents")]
     public async Task<IActionResult> GetParents(int id)
     {
@@ -143,6 +185,48 @@ public class TagsController : ControllerBase
         }
 
         return Ok(parents);
+    }
+
+    [HttpGet("{id}/parents/all")]
+    public async Task<IActionResult> GetAllParents(int id)
+    {
+        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+
+        var getParents = await GetParents(id);
+        if (getParents is not OkObjectResult) return BadRequest();
+
+        List<Tags?>? parentsToCheck = (getParents as OkObjectResult)?.Value as List<Tags?>;
+        List<Tags?> checkedParents = new();
+
+        if (parentsToCheck == null || parentsToCheck.Count == 0 || parentsToCheck.All(p => p == null))
+        {
+            return NoContent();
+        }
+
+        while (parentsToCheck.Count > 0)
+        {
+            Tags? currentParent = parentsToCheck.First();
+
+            if (currentParent != null)
+            {
+                getParents = await GetParents(currentParent.Id);
+                if (getParents is OkObjectResult)
+                {
+                    List<Tags?>? checkedParent = (getParents as OkObjectResult)?.Value as List<Tags?>;
+
+                    if (checkedParent != null && checkedParent.Count > 0)
+                    {
+                        checkedParent.ForEach((tag) => parentsToCheck.Add(tag));
+                    }
+                }
+            }
+
+            checkedParents.Add(currentParent);
+            parentsToCheck.Remove(currentParent);
+        }
+
+        Console.WriteLine($"There are {checkedParents.Count} parents in total.");
+        return Ok(checkedParents);
     }
 
     [HttpDelete("{id}")]
@@ -190,7 +274,6 @@ public class TagsController : ControllerBase
 
         return Ok();
     }
-
 
     [HttpPatch("{id}")]
     public async Task<ActionResult<Tags>> PatchTag(int id, [FromBody] JsonPatchDocument<Tags> patchDoc)
