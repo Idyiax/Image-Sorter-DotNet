@@ -4,8 +4,8 @@
 <style>
     :root {
         --columns: 5;
-        --entry-width: 184px;
-        --entry-margin: 16px;
+        --entry-width: 192px;
+        --entry-margin: 8px;
     }
 
     label {
@@ -13,7 +13,6 @@
     }
 
     #library-container {
-        display: flex;
         padding: 0px;
         flex-wrap: wrap;
         list-style: none;
@@ -26,6 +25,7 @@
     }
 
     .entry-container {
+        display: inline-block;
         width: var(--entry-width);
         margin: var(--entry-margin);
     }
