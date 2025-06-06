@@ -37,14 +37,27 @@ public class ImagesController : ControllerBase
         {
             if (filterMode == null || filterMode == "all")
             {
-                // todo: Create a jagged array with lists of each filter with all their children 
-                // todo: Filter such that as long as an image contains one tag from each list, it's valid
+                List<List<int>> filterLists = new();
 
-                images = await _context.Images.Where(i => 
-                    i.TagConnections != null &&
-                    i.TagConnections.Count > 0 &&
-                    filters.All(filter => i.TagConnections.Any(tc => tc.TagId == filter)))
-                    .ToListAsync();
+                for(int i = 0; i < filters.Count(); i++)
+                {
+                    var children = await _tagService.GetAllChildren(filters[i]);
+                    if (children == null) continue;
+                    filterLists.Add(_tagService.TagsToId(children));
+                    filterLists[i].Add(filters[i]);
+                }
+
+                // Entity Framework can't handle complex nested queries like this so this has to be
+                // converted to a list first and done natively. It's not particularly efficient but
+                // it works so it'll have to do for now.
+                images = _context.Images
+                    .Include(i => i.TagConnections)
+                    .Where(i => i.TagConnections != null && i.TagConnections.Any())
+                    .ToList()  // Materialize the base query first
+                    .Where(image => filterLists.All(filterList => image.TagConnections.Any(tc => filterList.Contains(tc.TagId))))
+                    .ToList();
+
+                Console.WriteLine($"There are {images.Count} images with the tag id {filters[0]}");
             }
 
             else
@@ -59,11 +72,11 @@ public class ImagesController : ControllerBase
 
                 filters = filters.Concat(_tagService.TagsToId(childFilters)).ToArray();
 
-                images = await _context.Images.Where(i => 
+                images = _context.Images.Where(i => 
                     i.TagConnections != null &&
                     i.TagConnections.Count > 0 &&
                     i.TagConnections.Any(tc => filters.Contains(tc.TagId)))
-                    .ToListAsync();
+                    .ToList();
             }
         }
 

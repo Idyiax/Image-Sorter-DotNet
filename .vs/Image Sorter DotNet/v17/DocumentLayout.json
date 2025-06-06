@@ -83,8 +83,7 @@
               "RelativeToolTip": "Services\\Interfaces\\ITagService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-06T06:07:35.883Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-06T06:07:35.883Z"
             },
             {
               "$type": "Document",
@@ -94,7 +93,7 @@
               "RelativeDocumentMoniker": "Services\\Implementations\\TagService.cs",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\Services\\Implementations\\TagService.cs",
               "RelativeToolTip": "Services\\Implementations\\TagService.cs",
-              "ViewState": "AgIAAB0AAAAAAAAAAAAwwDgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwEIAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-06T06:08:35.796Z",
               "EditorCaption": ""
@@ -132,7 +131,7 @@
               "RelativeDocumentMoniker": "Controllers\\ImagesController.cs",
               "ToolTip": "E:\\Personal Projects\\Image-Sorter-DotNet\\Controllers\\ImagesController.cs",
               "RelativeToolTip": "Controllers\\ImagesController.cs",
-              "ViewState": "AgIAACYAAAAAAAAAAAAYwDIAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAACAAAAAAAAAAAAAkwDMAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-06T09:58:53.167Z",
               "EditorCaption": ""
@@ -147,8 +146,7 @@
               "RelativeToolTip": "Controllers\\TagsController.cs",
               "ViewState": "AgIAAFQAAAAAAAAAAAAIwIgAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-16T10:53:16.199Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-16T10:53:16.199Z"
             },
             {
               "$type": "Document",

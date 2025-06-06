@@ -59,12 +59,16 @@ namespace Image_Sorter_DotNet.Services.Implementations
 
             result = result.Where(tag => tag.Id != id).ToList(); // Exclude parent
 
+            /* TODO: Make sure duplicate entries are removed. 
+             * They should have been with the hashet but sometimes aren't for some reason.
+
             Console.WriteLine($"Found {result.Count} children in total");
 
             foreach (Tags child in result)
             {
                 Console.WriteLine($"Found the tag with name: {child.TagName}");
             }
+            */
 
             return result;
         }
