@@ -52,12 +52,21 @@ namespace Image_Sorter_DotNet.Services.Implementations
         {
             if (await GetTag(id) == null) return null;
 
-            var visitedIds = new HashSet<int>();
-            var result = new List<Tags>();
+            HashSet<int> visitedIds = new();
+            List<Tags> result = new();
 
             await TraverseForChildren(id, visitedIds, result);
 
-            return (List<Tags>?)result.Where(tag => tag.Id != id); // Exclude parent
+            result = result.Where(tag => tag.Id != id).ToList(); // Exclude parent
+
+            Console.WriteLine($"Found {result.Count} children in total");
+
+            foreach (Tags child in result)
+            {
+                Console.WriteLine($"Found the tag with name: {child.TagName}");
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -79,6 +88,15 @@ namespace Image_Sorter_DotNet.Services.Implementations
                 result.Add(child);
                 await TraverseForChildren(child.Id, visitedIds, result);
             }
+        }
+
+        /// <summary>
+        /// Converts a list of tags to a list of tag IDs.
+        /// </summary>
+        /// <param name="tags"> The list of tags to convert. </param>
+        public List<int> TagsToId(List<Tags> tags)
+        {
+            return tags.ConvertAll(t => t.Id).ToList();
         }
     }
 }

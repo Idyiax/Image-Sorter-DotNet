@@ -9,6 +9,6 @@ namespace Image_Sorter_DotNet.Services.Interfaces
         public Task<List<Tags>?> GetAllTags();
         public Task<List<Tags>?> GetChildren(int id);
         public Task<List<Tags>?> GetAllChildren(int id);
-
+        public List<int> TagsToId(List<Tags> tags);
     }
 }

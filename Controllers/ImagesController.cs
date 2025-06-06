@@ -4,6 +4,7 @@ using Image_Sorter_DotNet.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
+using Image_Sorter_DotNet.Services.Interfaces;
 
 namespace Image_Sorter_DotNet.Controllers;
 
@@ -12,10 +13,12 @@ namespace Image_Sorter_DotNet.Controllers;
 public class ImagesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly ITagService _tagService;
 
-    public ImagesController(ApplicationDbContext context)
+    public ImagesController(ApplicationDbContext context, ITagService tagService)
     {
         _context = context;
+        _tagService = tagService;
     }
 
     [HttpGet]
@@ -46,7 +49,15 @@ public class ImagesController : ControllerBase
 
             else
             {
-                // todo: Add every child tag from the initial filters list to the filters list
+                var childFilters = new List<Tags>();
+
+                foreach (var filter in filters)
+                {
+                    var children = await _tagService.GetAllChildren(filter);
+                    if (children != null) childFilters = childFilters.Concat(children).ToList();
+                }
+
+                filters = filters.Concat(_tagService.TagsToId(childFilters)).ToArray();
 
                 images = await _context.Images.Where(i => 
                     i.TagConnections != null &&
