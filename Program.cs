@@ -1,6 +1,8 @@
 using Image_Sorter_DotNet.Data;
-using Microsoft.EntityFrameworkCore;
+using Image_Sorter_DotNet.Services.Implementations;
+using Image_Sorter_DotNet.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
@@ -15,6 +17,8 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddTransient<ITagService, TagService>();
 
 var app = builder.Build();
 

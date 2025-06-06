@@ -166,8 +166,10 @@
             if(filterMode == null) filterMode = 'all';
             if(tagFilters == null) tagFilters = [];
 
-            var impliedFilters = [];
+            
+            /*var impliedFilters = [];
 
+            
             if(tagFilters.length > 0){
                 for(let i = 0; i < tagFilters.length; i++){
                     let response = await fetch(`/api/tags/${tagFilters[i].id}/children/all`);
@@ -177,12 +179,13 @@
                     }
                 }
             }
+            
 
-            const fullFilters = tagFilters.concat(impliedFilters);
+            const fullFilters = tagFilters.concat(impliedFilters);*/
 
             query.set('sortingMode', sortingMode);
             query.set('filterMode', filterMode);
-            if(fullFilters.length > 0) query.set('tagFilters', fullFilters.map(filter => filter.id).join(','));
+            if(tagFilters.length > 0) query.set('tagFilters', tagFilters.map(filter => filter.id).join(','));
 
             const response = await fetch(`/api/images?${query.toString()}`);
 

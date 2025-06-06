@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.JsonPatch;
 using System.Threading.Tasks;
 using Azure;
+using Image_Sorter_DotNet.Services.Interfaces;
 
 namespace Image_Sorter_DotNet.Controllers;
 
@@ -14,10 +15,12 @@ namespace Image_Sorter_DotNet.Controllers;
 public class TagsController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly ITagService _tagService;
 
-    public TagsController(ApplicationDbContext context)
+    public TagsController(ApplicationDbContext context, ITagService tagService)
     {
         _context = context;
+        _tagService = tagService;
     }
 
     [HttpPost]
@@ -82,7 +85,7 @@ public class TagsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllTags()
     {
-        List<Tags> tags = await _context.Tags.ToListAsync();
+        List<Tags>? tags = await _tagService.GetAllTags();
 
         if (tags == null || tags.Count == 0)
         {
@@ -95,7 +98,7 @@ public class TagsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTag(int id)
     {
-        var tag = await _context.Tags.FindAsync(id);
+        var tag = await _tagService.GetTag(id);
 
         if (tag == null) return NotFound();
 
@@ -118,11 +121,11 @@ public class TagsController : ControllerBase
     [HttpGet("{id}/children")]
     public async Task<IActionResult> GetChildren(int id)
     {
-        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+        if (await _tagService.GetTag(id) == null) return NotFound($"The tag with the ID {id} does not exist.");
 
-        List<Tags?> children = _context.TagRelations.Where(tr => tr.ParentTagId == id).Select(tr => tr.ChildTag).ToList();
+        var children = await _tagService.GetChildren(id);
 
-        if (children.Count == 0 || children.All(c => c == null))
+        if (children == null || children.Count == 0)
         {
             return NoContent();
         }
@@ -133,43 +136,12 @@ public class TagsController : ControllerBase
     [HttpGet("{id}/children/all")]
     public async Task<IActionResult> GetAllChildren(int id)
     {
-        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+        if (await _tagService.GetTag(id) == null) return NotFound($"The tag with the ID {id} does not exist.");
 
-        var getChildren = await GetChildren(id);
-        if (getChildren is not OkObjectResult) return BadRequest();
+        var allChildren = _tagService.GetAllChildren(id);
+        if (allChildren == null) return NoContent();
 
-        List<Tags?>? childrenToCheck = (getChildren as OkObjectResult)?.Value as List<Tags?>;
-        List<Tags?> checkedChildren = new();
-
-        if (childrenToCheck == null || childrenToCheck.Count == 0 || childrenToCheck.All(p => p == null))
-        {
-            return NoContent();
-        }
-
-        while (childrenToCheck.Count > 0)
-        {
-            Tags? currentChild = childrenToCheck.First();
-
-            if (currentChild != null)
-            {
-                getChildren = await GetChildren(currentChild.Id);
-                if (getChildren is OkObjectResult)
-                {
-                    List<Tags?>? checkedChild = (getChildren as OkObjectResult)?.Value as List<Tags?>;
-
-                    if (checkedChild != null && checkedChild.Count > 0)
-                    {
-                        checkedChild.ForEach((tag) => childrenToCheck.Add(tag));
-                    }
-                }
-            }
-
-            checkedChildren.Add(currentChild);
-            childrenToCheck.Remove(currentChild);
-        }
-
-        Console.WriteLine($"There are {checkedChildren.Count} parents in total.");
-        return Ok(checkedChildren);
+        return Ok(allChildren);
     }
 
     [HttpGet("{id}/parents")]
@@ -225,7 +197,6 @@ public class TagsController : ControllerBase
             parentsToCheck.Remove(currentParent);
         }
 
-        Console.WriteLine($"There are {checkedParents.Count} parents in total.");
         return Ok(checkedParents);
     }
 

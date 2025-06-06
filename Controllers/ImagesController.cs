@@ -34,17 +34,25 @@ public class ImagesController : ControllerBase
         {
             if (filterMode == null || filterMode == "all")
             {
-                images = await _context.Images
-                    .Where(i => i.TagConnections != null
-                    && i.TagConnections.Count > 0
-                    && filters.All(filter => i.TagConnections.Any(tc => tc.TagId == filter))) 
-                    .ToListAsync();
+                // todo: Create a jagged array with lists of each filter with all their children 
+                // todo: Filter such that as long as an image contains one tag from each list, it's valid
 
+                images = await _context.Images.Where(i => 
+                    i.TagConnections != null &&
+                    i.TagConnections.Count > 0 &&
+                    filters.All(filter => i.TagConnections.Any(tc => tc.TagId == filter)))
+                    .ToListAsync();
             }
 
             else
             {
-                images = await _context.Images.Where(i => i.TagConnections != null && i.TagConnections.Count > 0 && i.TagConnections.Any(tc => filters.Contains(tc.TagId))).ToListAsync();
+                // todo: Add every child tag from the initial filters list to the filters list
+
+                images = await _context.Images.Where(i => 
+                    i.TagConnections != null &&
+                    i.TagConnections.Count > 0 &&
+                    i.TagConnections.Any(tc => filters.Contains(tc.TagId)))
+                    .ToListAsync();
             }
         }
 
