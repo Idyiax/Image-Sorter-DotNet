@@ -294,9 +294,8 @@
         }
         
         else {
+            console.error(`Tried deleting the tag ${tag} from the image with id ${id} but failed with error code ${response.status}.`);
             console.log(response);
-            console.log(response.status);
-            console.error(`Tried deleting the tag ${tag} from the image with id ${id} but failed.`);
         }
     }
 </script>

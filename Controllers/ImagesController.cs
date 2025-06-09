@@ -13,11 +13,13 @@ namespace Image_Sorter_DotNet.Controllers;
 public class ImagesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly IImageService _imageService;
     private readonly ITagService _tagService;
 
-    public ImagesController(ApplicationDbContext context, ITagService tagService)
+    public ImagesController(ApplicationDbContext context, IImageService imageService, ITagService tagService)
     {
         _context = context;
+        _imageService = imageService;
         _tagService = tagService;
     }
 
@@ -111,7 +113,7 @@ public class ImagesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetImage(int id)
     {
-        var image = await _context.Images.FindAsync(id);
+        Images? image = await _context.Images.FindAsync(id);
 
         if (image == null)
         {
@@ -124,22 +126,18 @@ public class ImagesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddImage([FromForm] IFormFile file, [FromForm] string? name)
     {
-        // Create unique filename
         var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
 
-        // Create full path
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", uniqueFileName);
 
         try
         {
-            // Create directory if it doesn't exist
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img");
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
             }
 
-            // Save the file
             using (var stream = System.IO.File.Create(filePath))
             {
                 await file.CopyToAsync(stream);
@@ -151,7 +149,6 @@ public class ImagesController : ControllerBase
             return BadRequest();
         }
 
-        // Create database entry
         var image = new Images
         {
             FileName = name == null ? "" : name,
@@ -160,7 +157,6 @@ public class ImagesController : ControllerBase
 
         try
         {
-            // Add image entry to the database
             _context.Images.Add(image);
             await _context.SaveChangesAsync();
         }
@@ -178,17 +174,11 @@ public class ImagesController : ControllerBase
     [HttpPatch("{id}")]
     public async Task<IActionResult> PatchImage(int id, [FromBody] JsonPatchDocument<Images> patchDoc)
     {
-        if (patchDoc == null)
-        {
-            return BadRequest("No patch document sent.");
-        }
+        if (patchDoc == null) return BadRequest("No patch document sent.");
 
         var image = await _context.Images.FindAsync(id);
 
-        if (image == null)
-        {
-            return NotFound($"The image with the id '{id}' could not be found.");
-        }
+        if (image == null) return NotFound($"Image with ID {id} not found.");
 
         patchDoc.ApplyTo(image);
 
@@ -219,6 +209,8 @@ public class ImagesController : ControllerBase
     [HttpGet("{id}/tags")]
     public async Task<ActionResult<IEnumerable<Tags>>> GetTags(int id)
     {
+        if (await _imageService.GetImage(id) == null) return NotFound($"Image with ID {id} not found");
+
         List<Tags> tags =  await _context.TagConnections
             .Where(tagConnection => tagConnection.ImageId == id)
             .Join(_context.Tags,
@@ -241,6 +233,8 @@ public class ImagesController : ControllerBase
     [HttpPost("{id}/tags/{tagId}")]
     public async Task<IActionResult> AddTag(int id, int tagId)
     {
+        if (await _imageService.GetImage(id) == null) return NotFound($"Image with ID {id} not found");
+
         var connection = new TagConnections
         {
             ImageId = id,
@@ -256,12 +250,12 @@ public class ImagesController : ControllerBase
     [HttpDelete("{id}/tags/{tagId}")]
     public async Task<IActionResult> RemoveTag(int id, int tagId)
     {
+        if (await _imageService.GetImage(id) == null) return NotFound($"Image with ID {id} not found");
+        if (await _tagService.GetTag(tagId) == null) return NotFound($"Tag with ID {tagId} not found");
+
         TagConnections? connection = await _context.TagConnections.FirstOrDefaultAsync((c) => c.TagId == tagId);
 
-        if (connection == null)
-        {
-            return NotFound();
-        }
+        if (connection == null) return NotFound();
 
         _context.TagConnections.Remove(connection);
         await _context.SaveChangesAsync();

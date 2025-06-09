@@ -110,10 +110,7 @@ public class TagsController : ControllerBase
     {
         Tags? tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == name);
 
-        if (tag == null)
-        {
-            return NotFound();
-        }
+        if (tag == null) return NotFound();
 
         return Ok(tag);
     }
@@ -121,14 +118,10 @@ public class TagsController : ControllerBase
     [HttpGet("{id}/children")]
     public async Task<IActionResult> GetChildren(int id)
     {
-        if (await _tagService.GetTag(id) == null) return NotFound($"The tag with the ID {id} does not exist.");
+        if (await _tagService.GetTag(id) == null) return NotFound($"Tag with the ID {id} not found.");
 
         var children = await _tagService.GetChildren(id);
-
-        if (children == null || children.Count == 0)
-        {
-            return NoContent();
-        }
+        if (children == null) return NoContent();
 
         return Ok(children);
     }
@@ -136,7 +129,7 @@ public class TagsController : ControllerBase
     [HttpGet("{id}/children/all")]
     public async Task<IActionResult> GetAllChildren(int id)
     {
-        if (await _tagService.GetTag(id) == null) return NotFound($"The tag with the ID {id} does not exist.");
+        if (await _tagService.GetTag(id) == null) return NotFound($"Tag with ID {id} not found.");
 
         var allChildren = _tagService.GetAllChildren(id);
         if (allChildren == null) return NoContent();
@@ -147,68 +140,21 @@ public class TagsController : ControllerBase
     [HttpGet("{id}/parents")]
     public async Task<IActionResult> GetParents(int id)
     {
-        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
+        if (await _tagService.GetTag(id) == null) return NotFound($"Tag with ID {id} not found.");
 
         List<Tags?> parents = _context.TagRelations.Where(tr => tr.ChildTagId == id).Select(tr => tr.ParentTag).ToList();
 
-        if (parents.Count == 0 || parents.All(p => p == null))
-        {
-            return NoContent();
-        }
+        if (parents.Count == 0 || parents.All(p => p == null)) return NoContent();
 
         return Ok(parents);
-    }
-
-    [HttpGet("{id}/parents/all")]
-    public async Task<IActionResult> GetAllParents(int id)
-    {
-        if (await GetTag(id) is not OkObjectResult) return NotFound($"The tag with the ID {id} does not exist.");
-
-        var getParents = await GetParents(id);
-        if (getParents is not OkObjectResult) return BadRequest();
-
-        List<Tags?>? parentsToCheck = (getParents as OkObjectResult)?.Value as List<Tags?>;
-        List<Tags?> checkedParents = new();
-
-        if (parentsToCheck == null || parentsToCheck.Count == 0 || parentsToCheck.All(p => p == null))
-        {
-            return NoContent();
-        }
-
-        while (parentsToCheck.Count > 0)
-        {
-            Tags? currentParent = parentsToCheck.First();
-
-            if (currentParent != null)
-            {
-                getParents = await GetParents(currentParent.Id);
-                if (getParents is OkObjectResult)
-                {
-                    List<Tags?>? checkedParent = (getParents as OkObjectResult)?.Value as List<Tags?>;
-
-                    if (checkedParent != null && checkedParent.Count > 0)
-                    {
-                        checkedParent.ForEach((tag) => parentsToCheck.Add(tag));
-                    }
-                }
-            }
-
-            checkedParents.Add(currentParent);
-            parentsToCheck.Remove(currentParent);
-        }
-
-        return Ok(checkedParents);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<Tags>> DeleteTag(int id)
     {
-        var tag = await _context.Tags.FindAsync(id);
+        Tags? tag = await _tagService.GetTag(id);
 
-        if (tag == null)
-        {
-            return NotFound();
-        }
+        if (tag == null) return NotFound($"Tag with ID {id} not found.");
 
         var relations = _context.TagRelations.Where(tr => tr.ParentTagId == id || tr.ChildTagId == id);
         var connections = _context.TagConnections.Where(tc => tc.TagId == id);
@@ -224,7 +170,7 @@ public class TagsController : ControllerBase
         
         catch (Exception e)
         {
-            return BadRequest($"Failed to delete tag with id {id}: {e}");
+            return BadRequest($"Failed to delete tag with ID {id}: {e}");
         }
 
         return Ok(tag);
@@ -233,12 +179,12 @@ public class TagsController : ControllerBase
     [HttpDelete("{id}/children/{childId}")]
     public async Task<ActionResult<Tags>> DeleteChild(int id, int childId)
     {
-        if (await GetTag(id) is not OkObjectResult) return NotFound($"Parent tag with ID {id} not found");
-        if (await GetTag(childId) is not OkObjectResult) return NotFound($"Child tag with ID {childId} not found");
+        if (await _tagService.GetTag(id) == null) return NotFound($"Parent tag with ID {id} not found");
+        if (await _tagService.GetTag(childId) == null) return NotFound($"Child tag with ID {childId} not found");
 
         TagRelations? relation = await _context.TagRelations.FirstOrDefaultAsync(tr => tr.ParentTagId == id && tr.ChildTagId == childId);
 
-        if (relation == null) return NotFound($"Could not find a relationship between the parent tag with ID {id} and child tag with ID {childId}");
+        if (relation == null) return NotFound($"Relationship not found between parent tag with ID {id} and child tag with ID {childId}");
         
         _context.TagRelations.Remove(relation);
         await _context.SaveChangesAsync();
