@@ -50,7 +50,10 @@ namespace Image_Sorter_DotNet.Services.Implementations
                 return false;
             }
 
+            List<TagConnections> connectedTags = _context.TagConnections.Where(tc => tc.Id == id).ToList();
+
             _context.Images.Remove(image);
+            _context.TagConnections.RemoveRange(connectedTags);
             await _context.SaveChangesAsync();
 
             return true;
