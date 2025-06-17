@@ -118,7 +118,7 @@ public class TagsController : ControllerBase
     [HttpGet("{id}/children")]
     public async Task<IActionResult> GetChildren(int id)
     {
-        if (await _tagService.GetTag(id) == null) return NotFound($"Tag with the ID {id} not found.");
+        if (await _tagService.GetTag(id) == null) return NotFound($"Tag with ID {id} not found.");
 
         var children = await _tagService.GetChildren(id);
         if (children == null) return NoContent();

@@ -56,10 +56,11 @@ public class ImagesController : ControllerBase
                     .Include(i => i.TagConnections)
                     .Where(i => i.TagConnections != null && i.TagConnections.Any())
                     .ToList()  // Materialize the base query first
-                    .Where(image => filterLists.All(filterList => image.TagConnections.Any(tc => filterList.Contains(tc.TagId))))
+                    .Where(image => 
+                        filterLists.All(filterList => image.TagConnections != null && 
+                            image.TagConnections.Any(tc => 
+                                filterList.Contains(tc.TagId))))
                     .ToList();
-
-                Console.WriteLine($"There are {images.Count} images with the tag id {filters[0]}");
             }
 
             else
@@ -113,12 +114,9 @@ public class ImagesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetImage(int id)
     {
-        Images? image = await _context.Images.FindAsync(id);
+        Images? image = await _imageService.GetImage(id);
 
-        if (image == null)
-        {
-            return NotFound();
-        }
+        if (image == null) return NotFound();
 
         return Ok(image);
     }
@@ -127,7 +125,6 @@ public class ImagesController : ControllerBase
     public async Task<IActionResult> AddImage([FromForm] IFormFile file, [FromForm] string? name)
     {
         var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
-
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", uniqueFileName);
 
         try
@@ -146,7 +143,7 @@ public class ImagesController : ControllerBase
 
         catch
         {
-            return BadRequest();
+            return BadRequest($"Could not create image at {filePath}.");
         }
 
         var image = new Images
@@ -165,7 +162,7 @@ public class ImagesController : ControllerBase
         {
             // Delete the created image if adding the database entry fails
             System.IO.File.Delete(filePath);
-            return BadRequest($"Could not add the image {name} because of the following error: {e}");
+            return BadRequest($"Could not add image {name} because of the following error: {e}");
         }
 
         return CreatedAtAction(nameof(GetImage), new { id = image.Id }, image);
@@ -176,7 +173,7 @@ public class ImagesController : ControllerBase
     {
         if (patchDoc == null) return BadRequest("No patch document sent.");
 
-        var image = await _context.Images.FindAsync(id);
+        Images? image = await _imageService.GetImage(id);
 
         if (image == null) return NotFound($"Image with ID {id} not found.");
 
@@ -189,20 +186,12 @@ public class ImagesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteImage(int id)
     {
-        var image = await _context.Images.FindAsync(id);
+        if (await _imageService.GetImage(id) == null) return NotFound($"Image with ID {id} not found.");
 
-        if (image == null)
-        {
-            return NotFound();
-        }
+        bool result = await _imageService.DeleteImage(id);
 
-        var imagePath = image.FilePathName;
-
-        _context.Images.Remove(image);
-
-        await _context.SaveChangesAsync();
-
-        return Ok();
+        if (result) return Ok();
+        else return Problem("Image could not be deleted.");
     }
 
 
