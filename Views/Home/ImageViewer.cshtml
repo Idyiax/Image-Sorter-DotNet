@@ -71,7 +71,7 @@
     });
 
     document.getElementById('edit-image-name').addEventListener('click', EditImageName);
-    addTagButton.addEventListener('click', AddTag);
+    addTagButton.addEventListener('click', AddTagPrompt);
 
     async function DisplayImage() {
         try {
@@ -192,37 +192,36 @@
         newTag.addEventListener('click', (tag) => FilterByTag(tag));
         newTag.addEventListener('contextmenu', () => RemoveTag(tag, newTag));
     }
-    async function AddTag() {
+    async function AddTagPrompt(){
         const name = prompt('Add tag with the following name:');
 
         if(name == null){
             return;
         }
 
-        const findResponse = await fetch(`/api/tags/find?name=${name}`);
+        const response = await fetch(`/api/tags/find?name=${name}`);
 
         var tag;
 
+        if(response.ok) {
+            AddTag(await response.json());
+        }
+
         // If tag can't be found, prompt to create it and then add it.
-        if(findResponse.status == 404) {
+        else if(response.status == 404) {
             const createNewTag = confirm(`The tag "${name}" does not currently exist.\nWould you like to create it?`)
 
             if(createNewTag) {
                 tag = await CreateTag(name)
-                console.log(tag);
-            }
-
-            else {
-                return;
+                AddTag(tag);
             }
         }
 
-        if (!findResponse.ok) {
-                return;
+        else {
+            console.error("Failed to add tag.");
         }
-
-        tag = await findResponse.json();
-
+    }
+    async function AddTag(tag) {
         const tagIndex = tags.findIndex((t) => t.tagName == tag.tagName);
 
         if (tagIndex > -1) {
@@ -230,28 +229,18 @@
             return;
         }
 
-        // Add the new tag
-        const addResponse = await fetch(`/api/images/${id}/tags/${tag.id}`, {
+        const response = await fetch(`/api/images/${id}/tags/${tag.id}`, {
             method: 'POST'
         });
 
-        if(!addResponse.ok) {
-            return;
+        if(response.ok) {
+            tags.push(tag);
+            DisplayTag(tag);
         }
 
-        // Add new tag visually
-        const addedConnection = await addResponse.json();
-
-        const tagResponse = await fetch(`/api/tags/${addedConnection.tagId}`)
-
-        if(!tagResponse.ok) {
-            return;
+        else{
+            console.error(response);
         }
-
-        const newTag = await tagResponse.json();
-
-        tags.push(newTag);
-        DisplayTag(newTag);
     }
     async function CreateTag(name) {
         const colourHex = "#ff7f50";
@@ -272,11 +261,8 @@
             return;
         }
 
-        const tag = await response.json()
-
-        return tag;
+        return await response.json()
     }
-
     async function RemoveTag(tag, tagVisuals) {
         const response = await fetch(`/api/images/${id}/tags/${tag.id}`, {
             method: 'DELETE'
