@@ -414,20 +414,15 @@
     async function LoadParentTags () {
         const response = await fetch(`/api/tags/${selectedTag.id}/parents`)
 
-        if(response.status == 200) {
+        if(response.ok) {
             const parents = await response.json();
 
-            console.log(parents);
             parents.forEach((parent) => {
-                DisplayTag(parent, parentContainer);
+                DisplayTag(parent, parentContainer, null, () => { RemoveChildTag(parent, selectedTag); });
             });
         }
 
-        else if(response.status == 204){
-            //console.log(`The tag ${selectedTag.name} has no parents (tag id: ${selectedTag.id})`)
-        }
-
-        else{
+        else if(response.status != 204){
             return console.error(`Could not load parents for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
         }
     }
@@ -437,22 +432,16 @@
         if(response.status == 200) {
             const children = await response.json();
 
-            console.log(children);
-
             children.forEach((child) => {
-                DisplayTag(child, childContainer);
+                DisplayTag(child, childContainer, null, () => { RemoveChildTag(selectedTag, child); });
             });
         }
 
-        else if(response.status == 204){
-            //console.log(`The tag ${selectedTag.name} has no children (tag id: ${selectedTag.id})`)
-        }
-
-        else{
+        else if(response.status != 204){
             return console.error(`Could not load children for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
         }
     }
-    async function DisplayTag(tag, tagContainer) {
+    async function DisplayTag(tag, tagContainer, onLeftClick, onRightClick) {
         const newTag = document.createElement('div');
         const tagText = document.createElement('h1');
 
@@ -468,8 +457,8 @@
         newTag.appendChild(tagText);
         tagContainer.insertBefore(newTag, addTagButton);
 
-        newTag.addEventListener('click', (tag) => console.log("Tag clicked"));
-        newTag.addEventListener('contextmenu', () => console.log("Tag right-clicked"));
+        newTag.addEventListener('click', onLeftClick);
+        newTag.addEventListener('contextmenu', onRightClick);
     }
     async function AddParentTagPrompt() {
         const parentName = prompt("Enter the name of the tag to add as a parent.");
@@ -521,6 +510,20 @@
 
         else {
             console.error("There was an error when adding a tag relation.");
+        }
+    }
+    async function RemoveChildTag(selectedTag, childTag) {
+        const response = await fetch(`/api/tags/${selectedTag.id}/children/${childTag.id}` , {
+            method: "DELETE"
+        });
+
+        if(response.ok){
+            // TODO: Remove tag visual
+
+            // TODO: Remove node graph link
+        }
+        else{
+            console.error(response);
         }
     }
 </script>
