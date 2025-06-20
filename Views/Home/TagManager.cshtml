@@ -230,8 +230,7 @@
                   bckgDimensions && ctx.fillRect(node.x - bckgDimensions[0] / 2, node.y - bckgDimensions[1] / 2, ...bckgDimensions);
             })
             .onNodeClick((node, event) => {
-                selectedTag = node;
-                SetEditMode(node);
+                SelectTag(node);
             })
             .d3Force('link').distance(100);
     }
@@ -264,7 +263,10 @@
                     color: newTag.colourHex
                 });
 
-                graph.graphData({ nodes, links });
+                graph.graphData({ 
+                    nodes: nodes, 
+                    links: links
+                });
             }
             else {
                 console.log(response.status);
@@ -334,20 +336,16 @@
 
         try {
             const response = await fetch(`/api/tags/${selectedTag.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                method: 'DELETE'
             });
 
             if (response.ok) {
-                const newTag = await response.json();
-
                 let { nodes, links } = graph.graphData();
 
-                nodes = nodes.filter((node) => node.name != newTag.tagName);
+                links = links.filter(l => l.source !== selectedTag && l.target !== selectedTag);
+                nodes.splice(selectedTag.id, 1);
 
-                graph.graphData({ nodes, links });
+                Graph.graphData({ nodes, links });
 
                 selectedTag = null;
                 SetEditMode();
@@ -363,6 +361,10 @@
             console.error('Error:', error);
             alert('An error occurred while deleting the tag. Please try again.');
         }
+    }
+    async function SelectTag(tag) {
+        selectedTag = tag;
+        SetEditMode(selectedTag);
     }
     async function SetCreateMode() {
         inEditMode = false;
@@ -411,35 +413,53 @@
             childTags[0].parentNode.removeChild(childTags[0]);
         }    
     }
+    async function ClearChildTag(tag) {
+        let childTags = childContainer.getElementsByClassName('tag');
+        var counter = 0;
+        const maxCount = childTags.length;
+        while (counter < maxCount) {
+            if(childTags[counter].innerText == tag.name){
+                childTags[counter].parentNode.removeChild(childTags[counter]);
+            }
+        }
+    }
     async function LoadParentTags () {
         const response = await fetch(`/api/tags/${selectedTag.id}/parents`)
+
+        if(response.status == 204) return;
 
         if(response.ok) {
             const parents = await response.json();
 
             parents.forEach((parent) => {
-                DisplayTag(parent, parentContainer, null, () => { RemoveChildTag(parent, selectedTag); });
+                DisplayTag(
+                    parent, 
+                    parentContainer, 
+                    () => { SelectTag(parent) },
+                    () => { RemoveChildTag(parent, selectedTag); });
             });
         }
 
-        else if(response.status != 204){
-            return console.error(`Could not load parents for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
-        }
+        else return console.error(`Could not load parents for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
     }
     async function LoadChildTags () {
         const response = await fetch(`/api/tags/${selectedTag.id}/children`)
 
-        if(response.status == 200) {
+        if(response.status == 204) return;
+
+        if(response.ok) {
             const children = await response.json();
 
             children.forEach((child) => {
-                DisplayTag(child, childContainer, null, () => { RemoveChildTag(selectedTag, child); });
+                DisplayTag(
+                    child, 
+                    childContainer, 
+                    () => { SelectTag(child) },
+                    () => { RemoveChildTag(selectedTag, child); });
             });
         }
 
-        else if(response.status != 204){
-            return console.error(`Could not load children for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
-        }
+        else return console.error(`Could not load children for the tag ${selectedTag.name} (tag id: ${selectedTag.id})`);
     }
     async function DisplayTag(tag, tagContainer, onLeftClick, onRightClick) {
         const newTag = document.createElement('div');
@@ -518,7 +538,7 @@
         });
 
         if(response.ok){
-            // TODO: Remove tag visual
+            //if(tagVisual != null) tagVisual.remove();
 
             // TODO: Remove node graph link
         }
