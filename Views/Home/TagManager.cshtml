@@ -535,7 +535,12 @@
         if(response.ok){
             //if(tagVisual != null) tagVisual.remove();
 
-            // TODO: Remove node graph link
+            let { nodes, links } = graph.graphData();
+
+            let linkIndex = links.findIndex(l => l.source == selectedTag && l.target == childTag);
+            links.splice(linkIndex, 1);
+
+            graph.graphData({ nodes, links });
         }
         else{
             console.error(response);
