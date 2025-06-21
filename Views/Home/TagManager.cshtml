@@ -537,7 +537,8 @@
 
             let { nodes, links } = graph.graphData();
 
-            let linkIndex = links.findIndex(l => l.source == selectedTag && l.target == childTag);
+            let linkIndex = links.findIndex(l => l.source.id == selectedTag.id && l.target.id == childTag.id);
+
             links.splice(linkIndex, 1);
 
             graph.graphData({ nodes, links });
