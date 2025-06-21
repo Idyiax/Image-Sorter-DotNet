@@ -475,6 +475,23 @@
         newTag.addEventListener('click', onLeftClick);
         newTag.addEventListener('contextmenu', onRightClick);
     }
+    async function HideTag(tagName) {
+        parentContainer.childNodes.forEach(element => {
+            if(element.innerText == tagName){
+                element.remove();
+                return;
+            }
+        })
+
+        childContainer.childNodes.forEach(element => {
+            if(element.innerText == tagName){
+                element.remove();
+                return;
+            }
+        })
+
+        return console.warn(`Tag with the name ${tagName} not found.`);
+    }
     async function AddParentTagPrompt() {
         const parentName = prompt("Enter the name of the tag to add as a parent.");
         if(parentName == null) return;
@@ -521,6 +538,8 @@
             });
 
             graph.graphData({ nodes, links });
+
+            SetEditMode(selectedTag);
         }
 
         else {
@@ -533,15 +552,14 @@
         });
 
         if(response.ok){
-            //if(tagVisual != null) tagVisual.remove();
-
             let { nodes, links } = graph.graphData();
 
             let linkIndex = links.findIndex(l => l.source.id == selectedTag.id && l.target.id == childTag.id);
-
             links.splice(linkIndex, 1);
 
             graph.graphData({ nodes, links });
+            
+            SetEditMode(selectedTag);
         }
         else{
             console.error(response);
